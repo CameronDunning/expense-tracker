@@ -1,42 +1,33 @@
-import React from 'react';
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Link,
-  VStack,
-  Code,
-  Grid,
-  theme,
-} from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
-import { Logo } from './Logo';
+import React from 'react'
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { ChakraProvider, Box, Text, Link, VStack, Code, Grid, theme } from '@chakra-ui/react'
+
+import { ColorModeSwitcher } from './components/ColourModeSwitcher/ColourModeSwitcher'
+import { Logo } from './Logo'
+import { NavBar } from './components/NavBar/NavBar'
+import { UIAlert } from './components/UIAlert/UIAlert'
+import { Home } from './pages/Home'
+import { Login } from './pages/Login'
+import { Register } from './pages/Register'
 
 function App() {
-  return (
-    <ChakraProvider theme={theme}>
-      <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="40vmin" pointerEvents="none" />
-            <Text>
-              Edit <Code fontSize="xl">src/App.js</Code> and save to reload.
-            </Text>
-            <Link
-              color="teal.500"
-              href="https://chakra-ui.com"
-              fontSize="2xl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn Chakra
-            </Link>
-          </VStack>
-        </Grid>
-      </Box>
-    </ChakraProvider>
-  );
+    // const [showAlert, setShowAlert] = useState(false)
+    const showAlert = false
+
+    const router = createBrowserRouter([
+        { path: '/', element: <Home /> },
+        { path: '/login', element: <Login /> },
+        { path: '/register', element: <Register /> }, // TODO: Create register page
+    ])
+
+    return (
+        <ChakraProvider theme={theme}>
+            <NavBar />
+            {showAlert && <UIAlert severity="warning" text="This is a warning" />}
+            <RouterProvider router={router} />
+        </ChakraProvider>
+    )
 }
 
-export default App;
+export default App
