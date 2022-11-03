@@ -2,7 +2,7 @@ import { Button, Checkbox, Flex, FormControl, FormLabel, Heading, Input, Link, S
 
 export const Login = () => {
     return (
-        <Stack minH={'100vh'} direction={'row'}>
+        <Stack direction={'row'} flex={1}>
             <Flex flex={{ base: 0, md: 1 }}>
                 <Image
                     alt={'Login Image'}
