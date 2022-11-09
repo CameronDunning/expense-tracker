@@ -14,9 +14,9 @@ import {
     useDisclosure,
     useColorModeValue,
     Stack,
+    Image,
 } from '@chakra-ui/react'
 import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
-import { FaFileInvoiceDollar } from 'react-icons/fa'
 
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
 
@@ -51,7 +51,7 @@ export const NavBar = () => {
                         onClick={isOpen ? onClose : onOpen}
                     />
                     <HStack spacing={8} alignItems={'center'}>
-                        <FaFileInvoiceDollar />
+                        <Image src="logo-no-background.png" boxSize={'25px'} />
                         <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
                             {Links.map(link => (
                                 <NavLink key={link}>{link}</NavLink>
