@@ -18,7 +18,8 @@ import {
     Divider,
     Center,
 } from '@chakra-ui/react'
-import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
+// import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
 
 import { useUser } from '../../Stores/UserStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
