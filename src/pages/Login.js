@@ -1,4 +1,5 @@
 import { Button, Checkbox, Flex, FormControl, FormLabel, Heading, Input, Link, Stack, Image } from '@chakra-ui/react'
+import GoogleButton from '../components/GoogleButton/GoogleButton'
 
 export const Login = () => {
     return (
@@ -27,6 +28,7 @@ export const Login = () => {
                         <Button colorScheme={'blue'} variant={'solid'}>
                             Sign in
                         </Button>
+                        <GoogleButton />
                     </Stack>
                 </Stack>
             </Flex>
