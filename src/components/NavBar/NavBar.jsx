@@ -3,7 +3,6 @@ import {
     Flex,
     Avatar,
     HStack,
-    Link,
     IconButton,
     Button,
     Menu,
@@ -18,26 +17,31 @@ import {
     Divider,
     Center,
 } from '@chakra-ui/react'
-import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
+// import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
+import { Link } from '../Link/Link'
 
 import { useUser } from '../../Stores/UserStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
 
-const Links = ['Dashboard', 'Projects', 'Team']
+const LINKS = ['Dashboard', 'Projects', 'Team']
 
-const NavLink = ({ children }) => (
-    <Link
-        px={2}
-        py={1}
-        rounded={'md'}
-        _hover={{
-            textDecoration: 'none',
-            bg: useColorModeValue('gray.200', 'gray.700'),
-        }}
-        href={'#'}>
-        {children}
-    </Link>
-)
+const NavLink = ({ children }) => {
+    return (
+        <Link
+            href={`/${children.toLowerCase()}`}
+            text={children}
+            px={2}
+            py={1}
+            rounded={'md'}
+            hover={{
+                textDecoration: 'none',
+                bg: useColorModeValue('gray.200', 'gray.700'),
+            }}>
+            {children}
+        </Link>
+    )
+}
 
 export const NavBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -58,7 +62,7 @@ export const NavBar = () => {
                     <HStack spacing={8} alignItems={'center'}>
                         <Image src="logo-no-background.png" boxSize={'25px'} />
                         <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
-                            {Links.map(link => (
+                            {LINKS.map(link => (
                                 <NavLink key={link}>{link}</NavLink>
                             ))}
                         </HStack>
@@ -99,7 +103,7 @@ export const NavBar = () => {
                 {isOpen ? (
                     <Box pb={4} display={{ md: 'none' }}>
                         <Stack as={'nav'} spacing={4}>
-                            {Links.map(link => (
+                            {LINKS.map(link => (
                                 <NavLink key={link}>{link}</NavLink>
                             ))}
                         </Stack>
