@@ -1,5 +1,18 @@
-import { Button, Checkbox, Flex, FormControl, FormLabel, Heading, Input, Link, Stack, Image } from '@chakra-ui/react'
-import GoogleButton from '../components/GoogleButton/GoogleButton'
+import {
+    Button,
+    Checkbox,
+    Flex,
+    FormControl,
+    FormLabel,
+    Heading,
+    Input,
+    Stack,
+    Image,
+    Text,
+    HStack,
+} from '@chakra-ui/react'
+import { GoogleButton } from '../components/GoogleButton/GoogleButton'
+import { Link } from '../components/Link/Link'
 
 export const Login = () => {
     return (
@@ -21,14 +34,17 @@ export const Login = () => {
                     <Stack spacing={6}>
                         <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'space-between'}>
                             <Checkbox>Remember me</Checkbox>
-                            <Link color={'blue.500'} href={'/register'}>
-                                Already have an account?
-                            </Link>
+                            <HStack>
+                                <Text>Don't have an account?</Text>
+                                <Link color={'blue.500'} href={'/register'}>
+                                    Register
+                                </Link>
+                            </HStack>
                         </Stack>
                         <Button colorScheme={'blue'} variant={'solid'}>
                             Sign in
                         </Button>
-                        <GoogleButton />
+                        <GoogleButton>Sign in with Google</GoogleButton>
                     </Stack>
                 </Stack>
             </Flex>
