@@ -1,3 +1,4 @@
+import { signOut } from 'firebase/auth'
 import {
     Box,
     Flex,
@@ -21,7 +22,8 @@ import {
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
 import { Link } from '../Link/Link'
 
-import { useUser } from '../../Stores/UserStore'
+import { auth } from '../../config/firebase'
+import { useUser, useSetUser } from '../../Stores/UserStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
 
 const LINKS = ['Dashboard', 'Projects', 'Team']
@@ -47,6 +49,12 @@ export const NavBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     const user = useUser()
+    const setUser = useSetUser()
+
+    const handleLogout = () => {
+        signOut(auth)
+        setUser(null)
+    }
 
     return (
         <>
@@ -60,7 +68,9 @@ export const NavBar = () => {
                         onClick={isOpen ? onClose : onOpen}
                     />
                     <HStack spacing={8} alignItems={'center'}>
-                        <Image src="logo-no-background.png" boxSize={'25px'} />
+                        <Link href="/">
+                            <Image src="logo-no-background.png" boxSize={'25px'} />
+                        </Link>
                         <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
                             {LINKS.map(link => (
                                 <NavLink key={link}>{link}</NavLink>
@@ -83,7 +93,7 @@ export const NavBar = () => {
                                     />
                                 </MenuButton>
                                 <MenuList>
-                                    <MenuItem>Link 1</MenuItem>
+                                    <MenuItem onClick={handleLogout}>Log out</MenuItem>
                                     <MenuItem>Link 2</MenuItem>
                                     <MenuDivider />
                                     <MenuItem>Link 3</MenuItem>
