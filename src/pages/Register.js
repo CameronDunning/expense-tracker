@@ -1,7 +1,8 @@
 import { useState } from 'react'
 
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
-import { addDoc, collection } from 'firebase/firestore'
+import { doc, setDoc } from 'firebase/firestore'
+import { Navigate } from 'react-router-dom'
 import {
     Button,
     Flex,
@@ -21,7 +22,6 @@ import { GoogleButton } from '../components/GoogleButton/GoogleButton'
 
 import { auth, db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
-import { Navigate } from 'react-router-dom'
 
 export const Register = () => {
     const [firstName, setFirstName] = useState('')
@@ -59,15 +59,12 @@ export const Register = () => {
             .then(userCredential => {
                 const user = userCredential.user
 
-                console.log('userCredential', userCredential)
-
                 // Add user metadata to databse
                 try {
-                    addDoc(collection(db, 'users'), {
+                    setDoc(doc(db, 'users', user.uid), {
                         firstName,
                         lastName,
                         email,
-                        uid: user.uid,
                     })
                 } catch (e) {
                     console.error('Error adding document: ', e)

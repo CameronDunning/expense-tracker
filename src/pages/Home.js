@@ -16,7 +16,7 @@ export const Home = () => {
     //         title: 'You are not logged in.',
     //         description: 'You have been redirected to the login page.',
     //         status: 'error',
-    //         duration: 9000,
+    //         duration: NOTIFICATION_DURATION,
     //         isClosable: true,
     //     })
     //     return <Navigate to={'/login'} />

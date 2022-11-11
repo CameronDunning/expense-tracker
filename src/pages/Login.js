@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { getDoc, doc } from 'firebase/firestore'
 import { Navigate } from 'react-router-dom'
 import {
     Button,
@@ -22,6 +22,8 @@ import { GoogleButton } from '../components/GoogleButton/GoogleButton'
 
 import { auth, db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
+import { NOTIFICATION_DURATION } from '../config/constants'
+
 import { Link } from '../components/Link/Link'
 
 export const Login = () => {
@@ -56,41 +58,36 @@ export const Login = () => {
                 const user = userCredential.user
 
                 // Get metadata and set user in store
-                const usersRef = collection(db, 'users')
-                const q = query(usersRef, where('uid', '==', user.uid))
-                getDocs(q)
-                    .then(docs => {
-                        if (docs.size === 0) {
-                            setErrorUserNotFound(true)
-                            return
-                        }
-
-                        docs.forEach(doc => {
-                            const userWithMetaData = {
+                const userRef = doc(db, 'users', user.uid)
+                getDoc(userRef)
+                    .then(document => {
+                        if (document.exists()) {
+                            // Set user in store
+                            setUser({
                                 ...user,
-                                firstName: doc.data().firstName,
-                                lastName: doc.data().lastName,
-                            }
-                            setUser(userWithMetaData)
+                                firstName: document.data().firstName,
+                                lastName: document.data().lastName,
+                            })
+
+                            // Notification
                             toast({
                                 title: 'You are logged in.',
+                                description: 'Welcome back!',
                                 status: 'success',
-                                duration: 9000,
+                                duration: NOTIFICATION_DURATION,
+                                isClosable: true,
                             })
-                        })
+                        } else {
+                            console.log('No such document!')
+                        }
                     })
                     .catch(error => {
                         console.log('Error getting document:', error)
                     })
             })
             .catch(error => {
-                const errorCode = error.code
-                const errorMessage = error.message
-                console.log(errorCode, errorMessage)
                 setErrorPassword(error.message)
             })
-
-        // console.log('rememberMe', rememberMe)
     }
 
     return (

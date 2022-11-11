@@ -7,10 +7,12 @@ import { ChakraProvider, theme } from '@chakra-ui/react'
 
 import { auth, db } from './config/firebase'
 import { useSetUser } from './Stores/UserStore'
+
 import { Layout } from './components/Layout/Layout'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
+import { Profile } from './pages/Profile'
 
 function App() {
     const setUser = useSetUser()
@@ -23,6 +25,7 @@ function App() {
                 { path: '/', element: <Home /> },
                 { path: 'login', element: <Login /> },
                 { path: 'register', element: <Register /> },
+                { path: 'profile', element: <Profile /> },
             ],
         },
     ])
