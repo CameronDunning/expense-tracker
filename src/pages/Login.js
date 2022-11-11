@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { signInWithEmailAndPassword } from 'firebase/auth'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import { Navigate } from 'react-router-dom'
 import {
     Button,
@@ -19,7 +20,7 @@ import {
 } from '@chakra-ui/react'
 import { GoogleButton } from '../components/GoogleButton/GoogleButton'
 
-import { auth } from '../config/firebase'
+import { auth, db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
 import { Link } from '../components/Link/Link'
 
@@ -30,6 +31,7 @@ export const Login = () => {
     const [password, setPassword] = useState('')
     const [errorMissingFields, setErrorMissingFields] = useState(false)
     const [errorPassword, setErrorPassword] = useState(false)
+    const [errorUserNotFound, setErrorUserNotFound] = useState(false)
 
     const user = useUser()
     const setUser = useSetUser()
@@ -41,6 +43,7 @@ export const Login = () => {
         event.preventDefault()
         setErrorMissingFields(false)
         setErrorPassword(false)
+        setErrorUserNotFound(false)
 
         if (!email || !password) {
             setErrorMissingFields(true)
@@ -51,14 +54,34 @@ export const Login = () => {
             .then(userCredential => {
                 // Signed in
                 const user = userCredential.user
-                console.log(user)
-                // ...
-                setUser(user)
-                toast({
-                    title: 'You are logged in.',
-                    status: 'success',
-                    duration: 9000,
-                })
+
+                // Get metadata and set user in store
+                const usersRef = collection(db, 'users')
+                const q = query(usersRef, where('uid', '==', user.uid))
+                getDocs(q)
+                    .then(docs => {
+                        if (docs.size === 0) {
+                            setErrorUserNotFound(true)
+                            return
+                        }
+
+                        docs.forEach(doc => {
+                            const userWithMetaData = {
+                                ...user,
+                                firstName: doc.data().firstName,
+                                lastName: doc.data().lastName,
+                            }
+                            setUser(userWithMetaData)
+                            toast({
+                                title: 'You are logged in.',
+                                status: 'success',
+                                duration: 9000,
+                            })
+                        })
+                    })
+                    .catch(error => {
+                        console.log('Error getting document:', error)
+                    })
             })
             .catch(error => {
                 const errorCode = error.code
@@ -114,6 +137,12 @@ export const Login = () => {
                                     <Alert status="error">
                                         <AlertIcon />
                                         {errorPassword}
+                                    </Alert>
+                                )}
+                                {errorUserNotFound && (
+                                    <Alert status="error">
+                                        <AlertIcon />
+                                        User not found
                                     </Alert>
                                 )}
                                 <GoogleButton>Sign in with Google</GoogleButton>
