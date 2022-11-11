@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
 import { onAuthStateChanged } from 'firebase/auth'
-import { getDocs, query, where, collection } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
@@ -38,18 +38,19 @@ function App() {
             }
 
             // Get metadata and set user in store
-            const usersRef = collection(db, 'users')
-            const q = query(usersRef, where('uid', '==', currentUser.uid))
-            getDocs(q)
-                .then(docs => {
-                    docs.forEach(doc => {
-                        const userWithMetaData = {
+            const userRef = doc(db, 'users', currentUser.uid)
+            getDoc(userRef)
+                .then(document => {
+                    if (document.exists()) {
+                        // Set user in store
+                        setUser({
                             ...currentUser,
-                            firstName: doc.data().firstName,
-                            lastName: doc.data().lastName,
-                        }
-                        setUser(userWithMetaData)
-                    })
+                            firstName: document.data().firstName,
+                            lastName: document.data().lastName,
+                        })
+                    } else {
+                        console.log('No such document!')
+                    }
                 })
                 .catch(error => {
                     console.log('Error getting document:', error)
