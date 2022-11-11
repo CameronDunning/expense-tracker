@@ -1,4 +1,5 @@
 import { signOut } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 import {
     Box,
     Flex,
@@ -17,6 +18,7 @@ import {
     Image,
     Divider,
     Center,
+    useToast,
 } from '@chakra-ui/react'
 // import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
@@ -25,6 +27,7 @@ import { Link } from '../Link/Link'
 import { auth } from '../../config/firebase'
 import { useUser, useSetUser } from '../../Stores/UserStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
+import { NOTIFICATION_DURATION } from '../../config/constants'
 
 const LINKS = ['Dashboard', 'Projects', 'Team']
 
@@ -47,6 +50,8 @@ const NavLink = ({ children }) => {
 
 export const NavBar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const navigate = useNavigate()
+    const toast = useToast()
 
     const user = useUser()
     const setUser = useSetUser()
@@ -54,6 +59,14 @@ export const NavBar = () => {
     const handleLogout = () => {
         signOut(auth)
         setUser(null)
+        toast({
+            title: 'Logged out',
+            description: 'You have been logged out',
+            status: 'success',
+            duration: NOTIFICATION_DURATION,
+            isClosable: true,
+        })
+        navigate('/login')
     }
 
     return (
@@ -89,7 +102,15 @@ export const NavBar = () => {
                                 </MenuButton>
                                 <MenuList>
                                     <MenuItem onClick={handleLogout}>Log out</MenuItem>
-                                    <MenuItem>Link 2</MenuItem>
+                                    <MenuItem>
+                                        <Link
+                                            href={'/profile'}
+                                            hover={{
+                                                textDecoration: 'none',
+                                            }}>
+                                            Profile
+                                        </Link>
+                                    </MenuItem>
                                     <MenuDivider />
                                     <MenuItem>Link 3</MenuItem>
                                 </MenuList>
