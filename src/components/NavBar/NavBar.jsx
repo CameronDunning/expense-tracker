@@ -29,7 +29,7 @@ import { useUser, useSetUser } from '../../Stores/UserStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 
-const LINKS = ['Dashboard', 'Projects', 'Team']
+const LINKS = ['Expenses', 'Incomes', 'Summary', 'Monthly']
 
 const NavLink = ({ children }) => {
     return (
