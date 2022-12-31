@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
 import { onAuthStateChanged } from 'firebase/auth'
-import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore'
+import { collection, doc, getDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
@@ -74,14 +74,14 @@ function App() {
     useEffect(() => {
         if (!user) return
 
-        const unsubscribe = onSnapshot(collection(db, `/users/${user.uid}/expenses`), querySnapshot => {
+        const q = query(collection(db, `/users/${user.uid}/expenses`), orderBy('date', 'desc'))
+        const unsubscribe = onSnapshot(q, querySnapshot => {
             if (querySnapshot.size === 0) return setExpenses([])
 
             let expensesArray = []
             querySnapshot.forEach(expense => {
                 expensesArray.push({ ...expense.data(), id: expense.id })
             })
-            expensesArray.sort((a, b) => b.date - a.date)
             setExpenses(expensesArray)
         })
 
@@ -94,16 +94,15 @@ function App() {
     useEffect(() => {
         if (!user) return
 
-        const unsubscribe = onSnapshot(collection(db, `/users/${user.uid}/incomes`), querySnapshot => {
+        const q = query(collection(db, `/users/${user.uid}/incomes`), orderBy('date', 'desc'))
+        const unsubscribe = onSnapshot(q, querySnapshot => {
             if (querySnapshot.size === 0) return setIncomes([])
 
             let incomesArray = []
             querySnapshot.forEach(income => {
                 incomesArray.push({ ...income.data(), id: income.id })
             })
-            incomesArray.sort((a, b) => b.date - a.date)
 
-            console.log('incomesArray', incomesArray)
             setIncomes(incomesArray)
         })
 
