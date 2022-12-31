@@ -8,18 +8,20 @@ import { ChakraProvider, theme } from '@chakra-ui/react'
 import { auth, db } from './config/firebase'
 import { useUser, useSetUser } from './Stores/UserStore'
 import { useSetExpenses } from './Stores/ExpensesStore'
-
+import { useSetIncomes } from './Stores/IncomesStore'
 import { Layout } from './components/Layout/Layout'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { Profile } from './pages/Profile'
 import { Expenses } from './pages/Expenses'
+import { Incomes } from './pages/Incomes'
 
 function App() {
     const user = useUser()
     const setUser = useSetUser()
     const setExpenses = useSetExpenses()
+    const setIncomes = useSetIncomes()
 
     const router = createBrowserRouter([
         {
@@ -31,6 +33,7 @@ function App() {
                 { path: 'register', element: <Register /> },
                 { path: 'profile', element: <Profile /> },
                 { path: 'expenses', element: <Expenses /> },
+                { path: 'incomes', element: <Incomes /> },
             ],
         },
     ])
@@ -87,7 +90,27 @@ function App() {
         }
     }, [user, setExpenses])
 
-    // TODO: Get incomes
+    // Get incomes
+    useEffect(() => {
+        if (!user) return
+
+        const unsubscribe = onSnapshot(collection(db, `/users/${user.uid}/incomes`), querySnapshot => {
+            if (querySnapshot.size === 0) return setIncomes([])
+
+            let incomesArray = []
+            querySnapshot.forEach(income => {
+                incomesArray.push({ ...income.data(), id: income.id })
+            })
+            incomesArray.sort((a, b) => b.date - a.date)
+
+            console.log('incomesArray', incomesArray)
+            setIncomes(incomesArray)
+        })
+
+        return () => {
+            unsubscribe()
+        }
+    }, [user, setIncomes])
 
     return (
         <ChakraProvider theme={theme}>

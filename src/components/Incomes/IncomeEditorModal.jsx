@@ -16,25 +16,22 @@ import {
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 import { NOTIFICATION_DURATION } from '../../config/constants'
-import { ExpenseForm } from '../ExpenseForm/ExpenseForm'
+import { IncomeForm } from './IncomeForm'
 
-export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
+export const IncomeEditorModal = ({ modalControls, income = {} }) => {
     const { isOpen, onClose } = modalControls
     const user = useUser()
     const toast = useToast()
 
-    const [currentExpense, setCurrentExpense] = useState(expense)
+    const [currentIncome, setCurrentIncome] = useState(income)
 
     const handleSubmit = () => {
         // Submit the edit to firebase
-        const { date, expenseName, category, split, recurring, amount, id } = currentExpense
+        const { date, incomeName, amount, id } = currentIncome
         try {
-            setDoc(doc(db, `users/${user.uid}/expenses/${id}`), {
+            setDoc(doc(db, `users/${user.uid}/incomes/${id}`), {
                 date,
-                expenseName,
-                category,
-                split,
-                recurring,
+                incomeName,
                 amount,
             }).then(() => {
                 toast({
@@ -60,8 +57,8 @@ export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
         onClose()
     }
 
-    const handleChange = newExpense => {
-        setCurrentExpense(newExpense)
+    const handleChange = newIncome => {
+        setCurrentIncome(newIncome)
     }
 
     return (
@@ -71,7 +68,7 @@ export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
                 <ModalHeader>Edit Expense</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <ExpenseForm expense={expense} handleChange={handleChange} />
+                    <IncomeForm income={income} handleChange={handleChange} />
                 </ModalBody>
 
                 <ModalFooter>
