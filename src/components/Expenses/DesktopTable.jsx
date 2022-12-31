@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { deleteDoc, doc } from 'firebase/firestore'
 import {
     TableContainer,
     Table,
@@ -14,22 +15,28 @@ import {
     useDisclosure,
     IconButton,
 } from '@chakra-ui/react'
-
 import { TbArrowsSplit } from 'react-icons/tb'
 import { FaPencilAlt, FaRedoAlt, FaTrashAlt } from 'react-icons/fa'
-import { DATE_FORMATTING } from '../../config/constants'
-import { formatter } from '../../utils/currencyFormatter'
 
-import { ExpenseEditorModal } from '../ExpenseTables/ExpenseEditorModal'
+import { formatter } from '../../utils/currencyFormatter'
+import { DATE_FORMATTING } from '../../config/constants'
+import { db } from '../../config/firebase'
+import { useUser } from '../../Stores/UserStore'
+import { ExpenseEditorModal } from './ExpenseEditorModal'
 
 export const DesktopTable = ({ expenses }) => {
     const modalControls = useDisclosure()
     const [selectedExpense, setSelectedExpense] = useState(null)
+    const user = useUser()
 
     const handleEditClick = expense => {
         setSelectedExpense(expense)
 
         modalControls.onOpen()
+    }
+
+    const handleDelete = expense => {
+        deleteDoc(doc(db, `/users/${user.uid}/expenses`, expense.id))
     }
 
     return (
@@ -94,7 +101,8 @@ export const DesktopTable = ({ expenses }) => {
                                         justify={'center'}
                                         rounded={'15%'}
                                         bg={'red.500'}
-                                        _hover={{ bg: 'red.600' }}>
+                                        _hover={{ bg: 'red.600' }}
+                                        onClick={() => handleDelete(expense)}>
                                         <Icon as={FaTrashAlt} size={'md'} w={5} h={5} />
                                     </IconButton>
                                 </HStack>

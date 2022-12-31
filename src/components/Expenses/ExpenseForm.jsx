@@ -22,9 +22,9 @@ import { TbArrowsSplit } from 'react-icons/tb'
 import { FaRedoAlt } from 'react-icons/fa'
 
 import { db } from '../../config/firebase'
-import { useUser } from '../../Stores/UserStore'
-
 import { NOTIFICATION_DURATION, CATEGORIES } from '../../config/constants'
+import { formatter } from '../../utils/currencyFormatter'
+import { useUser } from '../../Stores/UserStore'
 
 export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
     const toast = useToast()
@@ -37,8 +37,8 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
     const [category, setCategory] = useState(editing ? expense.category : '')
     const [split, setSplit] = useState(editing ? expense.split : false)
     const [recurring, setRecurring] = useState(editing ? expense.recurring : false)
-    const [amount, setAmount] = useState(editing ? expense.amount : 0)
-    const [halvedAmount, setHalvedAmount] = useState(editing ? `($${(expense.amount / 2).toFixed(2)})` : '($0.00)')
+    const [amount, setAmount] = useState(editing ? expense.amount : '')
+    const [halvedAmount, setHalvedAmount] = useState(editing ? `($${formatter.format(expense.amount / 2)})` : '($0.00)')
 
     useEffect(() => {
         if (!amount) {
@@ -83,7 +83,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         setCategory('')
         setSplit(false)
         setRecurring(false)
-        setAmount(0)
+        setAmount('')
     }
 
     const validate = () => {
@@ -132,7 +132,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         }
     }
 
-    const rowStyle = editing ? { base: 2 } : { base: 1, lg: 2 }
+    const rowStyle = editing ? { base: 1 } : { base: 1, lg: 2 }
 
     return (
         <>

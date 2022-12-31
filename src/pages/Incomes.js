@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import { Container, VStack, StackDivider } from '@chakra-ui/react'
 
 import { getWindowDimensions } from '../utils/windowDimensions'
-import { useExpenses } from '../Stores/ExpensesStore'
-import { ExpenseForm } from '../components/Expenses/ExpenseForm'
-import { DesktopTable } from '../components/Expenses/DesktopTable'
-import { MobileTable } from '../components/Expenses/MobileTable'
+import { IncomeForm } from '../components/Incomes/IncomeForm'
+import { DesktopTable } from '../components/Incomes/DesktopTable'
+import { MobileTable } from '../components/Incomes/MobileTable'
+import { useIncomes } from '../Stores/IncomesStore'
 
-export const Expenses = () => {
-    const expenses = useExpenses()
+export const Incomes = () => {
+    const incomes = useIncomes()
 
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
 
@@ -26,12 +26,12 @@ export const Expenses = () => {
         <main>
             <Container maxW="8xl">
                 <VStack divider={<StackDivider borderColor="gray.400" />} spacing={4}>
-                    <ExpenseForm />
+                    <IncomeForm />
 
                     {windowDimensions.width > 768 ? (
-                        <DesktopTable expenses={expenses} />
+                        <DesktopTable incomes={incomes} />
                     ) : (
-                        <MobileTable expenses={expenses} />
+                        <MobileTable incomes={incomes} />
                     )}
                 </VStack>
             </Container>
