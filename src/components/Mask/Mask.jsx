@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Heading, Container, useToast } from '@chakra-ui/react'
 
 import { auth } from '../../config/firebase'
-import { useUser, useSetUser } from '../../Stores/UserStore'
+import { useSetUser } from '../../Stores/UserStore'
 import { useSetExpenses } from '../../Stores/ExpensesStore'
 import { useSetIncomes } from '../../Stores/IncomesStore'
 import { NOTIFICATION_DURATION } from '../../config/constants'
