@@ -47,10 +47,10 @@ export const DesktopTable = ({ expenses }) => {
                         <Th>Date</Th>
                         <Th>Expense</Th>
                         <Th>Category</Th>
-                        <Th>Amount</Th>
-                        <Th>Split</Th>
+                        <Th isNumeric>Amount</Th>
+                        <Th isNumeric>Split</Th>
                         <Th></Th>
-                        <Th>Actions</Th>
+                        <Th isNumeric>Actions</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -113,10 +113,12 @@ export const DesktopTable = ({ expenses }) => {
                                     <Td>{expense.date.toDate().toLocaleDateString(undefined, DATE_FORMATTING)}</Td>
                                     <Td>{expense.expenseName}</Td>
                                     <Td>{expense.category}</Td>
-                                    <Td>{formatter.format(expense.amount)}</Td>
-                                    <Td>{split}</Td>
+                                    <Td isNumeric>{formatter.format(expense.amount)}</Td>
+                                    <Td isNumeric>{split}</Td>
                                     <Td>{icons}</Td>
-                                    <Td>{actions}</Td>
+                                    <Td isNumeric maxW={'70px'}>
+                                        {actions}
+                                    </Td>
                                 </Tr>
                             )
                         })}

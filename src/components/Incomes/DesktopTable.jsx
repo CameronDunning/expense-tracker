@@ -44,7 +44,7 @@ export const DesktopTable = ({ incomes }) => {
                     <Tr>
                         <Th>Date</Th>
                         <Th>Income</Th>
-                        <Th>Amount</Th>
+                        <Th isNumeric>Amount</Th>
                         <Th isNumeric maxWidth={'70px'}>
                             Actions
                         </Th>
@@ -84,7 +84,7 @@ export const DesktopTable = ({ incomes }) => {
                                 <Tr key={income.id}>
                                     <Td>{income.date.toDate().toLocaleDateString(undefined, DATE_FORMATTING)}</Td>
                                     <Td>{income.incomeName}</Td>
-                                    <Td>{formatter.format(income.amount)}</Td>
+                                    <Td isNumeric>{formatter.format(income.amount)}</Td>
                                     <Td isNumeric maxWidth={'70px'}>
                                         {actions}
                                     </Td>
