@@ -1,13 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 import { getDoc, doc, setDoc } from 'firebase/firestore'
-import { Navigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Button, Flex, FormControl, FormLabel, Heading, Input, Stack, useColorModeValue } from '@chakra-ui/react'
 
 import { db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
-
-import { Link } from '../components/Link/Link'
+import { NotFound } from './404'
 
 export const Profile = () => {
     const user = useUser()
@@ -16,15 +15,11 @@ export const Profile = () => {
     const [lastName, setLastName] = useState(user?.lastName)
 
     useEffect(() => {
-        if (user) {
-            setFirstName(user.firstName)
-            setLastName(user.lastName)
-        } else {
-            return <Navigate to={'/login'} />
-        }
+        setFirstName(user.firstName)
+        setLastName(user.lastName)
     }, [user])
 
-    const handleSave = () => {
+    const handleSave = useCallback(() => {
         const userRef = doc(db, 'users', user.uid)
         getDoc(userRef)
             .then(document => {
@@ -49,19 +44,18 @@ export const Profile = () => {
             .catch(error => {
                 console.log('Error getting document:', error)
             })
+    }, [firstName, lastName, setUser, user])
+
+    const bgColourFlex = useColorModeValue('gray.50', 'gray.800')
+    const bgColourStack = useColorModeValue('white', 'gray.700')
+
+    if (!user) {
+        return <NotFound />
     }
 
     return (
-        <Flex minH={'100vh'} align={'center'} justify={'center'} bg={useColorModeValue('gray.50', 'gray.800')}>
-            <Stack
-                spacing={4}
-                w={'full'}
-                maxW={'md'}
-                bg={useColorModeValue('white', 'gray.700')}
-                rounded={'xl'}
-                boxShadow={'lg'}
-                p={6}
-                my={12}>
+        <Flex minH={'100vh'} align={'center'} justify={'center'} bg={bgColourFlex}>
+            <Stack spacing={4} w={'full'} maxW={'md'} bg={bgColourStack} rounded={'xl'} boxShadow={'lg'} p={6} my={12}>
                 <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
                     User Profile Edit
                 </Heading>
@@ -74,7 +68,7 @@ export const Profile = () => {
                     <Input value={lastName} onChange={e => setLastName(e.target.value)} />
                 </FormControl>
                 <Stack spacing={6} direction={['column', 'row']}>
-                    <Link href={'/'} w={'full'}>
+                    <Link to={'/'}>
                         <Button
                             bg={'red.400'}
                             color={'white'}

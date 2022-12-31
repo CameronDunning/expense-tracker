@@ -17,14 +17,14 @@ import {
     Alert,
     AlertIcon,
     useToast,
+    Link,
 } from '@chakra-ui/react'
 import { GoogleButton } from '../components/GoogleButton/GoogleButton'
+import { Link as RouterLink } from 'react-router-dom'
 
 import { auth, db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
 import { NOTIFICATION_DURATION } from '../config/constants'
-
-import { Link } from '../components/Link/Link'
 
 export const Login = () => {
     const toast = useToast()
@@ -109,14 +109,10 @@ export const Login = () => {
                                 <Input type="password" onChange={e => setPassword(e.target.value)} />
                             </FormControl>
                             <Stack spacing={6}>
-                                <Stack
-                                    direction={{ base: 'column', sm: 'row' }}
-                                    align={'start'}
-                                    justify={'space-between'}>
-                                    {/* <Checkbox onChange={setRememberMe}>Remember me</Checkbox> */}
+                                <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'right'}>
                                     <HStack>
                                         <Text>Don't have an account?</Text>
-                                        <Link color={'blue.500'} href={'/register'}>
+                                        <Link as={RouterLink} to="/register" color={'blue.500'}>
                                             Register
                                         </Link>
                                     </HStack>
