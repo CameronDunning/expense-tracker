@@ -82,7 +82,7 @@ export const DesktopTable = ({ expenses }) => {
                             const split = expense.split ? formatter.format(expense.amount / 2) : ''
 
                             const actions = (
-                                <HStack>
+                                <HStack justifyContent={'right'}>
                                     <IconButton
                                         w={8}
                                         h={8}

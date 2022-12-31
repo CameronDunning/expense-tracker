@@ -47,9 +47,9 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         }
 
         if (split) {
-            setHalvedAmount(`($${(amount / 2).toFixed(2)})`)
+            setHalvedAmount(`(${formatter.format(amount / 2)})`)
         } else {
-            setHalvedAmount(`($${amount.toFixed(2)})`)
+            setHalvedAmount(`(${formatter.format(amount)})`)
         }
     }, [split, amount])
 
@@ -189,7 +189,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
                                         placeholder="Amount"
                                         type="number"
                                         value={amount}
-                                        onChange={e => setAmount(parseInt(e.target.value))}
+                                        onChange={e => setAmount(parseFloat(e.target.value))}
                                     />
                                     <InputRightElement children={halvedAmount} pr={12} />
                                 </InputGroup>
