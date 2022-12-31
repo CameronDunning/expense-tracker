@@ -16,6 +16,7 @@ import { Register } from './pages/Register'
 import { Profile } from './pages/Profile'
 import { Expenses } from './pages/Expenses'
 import { Incomes } from './pages/Incomes'
+import { NotFound } from './pages/404'
 
 function App() {
     const user = useUser()
@@ -35,6 +36,7 @@ function App() {
                 { path: 'expenses', element: <Expenses /> },
                 { path: 'incomes', element: <Incomes /> },
             ],
+            errorElement: <NotFound />,
         },
     ])
 
@@ -72,7 +74,10 @@ function App() {
 
     // Get expenses
     useEffect(() => {
-        if (!user) return
+        if (!user) {
+            setExpenses([])
+            return
+        }
 
         const q = query(collection(db, `/users/${user.uid}/expenses`), orderBy('date', 'desc'))
         const unsubscribe = onSnapshot(q, querySnapshot => {
@@ -92,7 +97,10 @@ function App() {
 
     // Get incomes
     useEffect(() => {
-        if (!user) return
+        if (!user) {
+            setIncomes([])
+            return
+        }
 
         const q = query(collection(db, `/users/${user.uid}/incomes`), orderBy('date', 'desc'))
         const unsubscribe = onSnapshot(q, querySnapshot => {

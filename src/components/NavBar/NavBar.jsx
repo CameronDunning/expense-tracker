@@ -26,6 +26,8 @@ import { Link } from '../Link/Link'
 
 import { auth } from '../../config/firebase'
 import { useUser, useSetUser } from '../../Stores/UserStore'
+import { useSetExpenses } from '../../Stores/ExpensesStore'
+import { useSetIncomes } from '../../Stores/IncomesStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 
@@ -55,10 +57,15 @@ export const NavBar = () => {
 
     const user = useUser()
     const setUser = useSetUser()
+    const setExpenses = useSetExpenses()
+    const setIncomes = useSetIncomes()
 
     const handleLogout = () => {
         signOut(auth)
         setUser(null)
+        setExpenses([])
+        setIncomes([])
+
         toast({
             title: 'Logged out',
             description: 'You have been logged out',

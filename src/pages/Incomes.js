@@ -3,12 +3,15 @@ import { useState, useEffect } from 'react'
 import { Container, VStack, StackDivider } from '@chakra-ui/react'
 
 import { getWindowDimensions } from '../utils/windowDimensions'
+import { useUser } from '../Stores/UserStore'
+import { useIncomes } from '../Stores/IncomesStore'
 import { IncomeForm } from '../components/Incomes/IncomeForm'
 import { DesktopTable } from '../components/Incomes/DesktopTable'
 import { MobileTable } from '../components/Incomes/MobileTable'
-import { useIncomes } from '../Stores/IncomesStore'
+import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 
 export const Incomes = () => {
+    const user = useUser()
     const incomes = useIncomes()
 
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
@@ -21,6 +24,10 @@ export const Incomes = () => {
 
         return () => window.removeEventListener('resize', handleResize)
     }, [])
+
+    if (!user) {
+        return <NotLoggedIn />
+    }
 
     return (
         <main>
