@@ -19,6 +19,7 @@ import {
     AlertIcon,
 } from '@chakra-ui/react'
 import { GoogleButton } from '../components/GoogleButton/GoogleButton'
+import { Link as RouterLink } from 'react-router-dom'
 
 import { auth, db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
@@ -125,7 +126,7 @@ export const Register = () => {
                                 <Stack direction={{ base: 'column', sm: 'row' }} align={'start'} justify={'right'}>
                                     <HStack>
                                         <Text>Already have an account?</Text>
-                                        <Link color={'blue.500'} href={'/login'}>
+                                        <Link as={RouterLink} to="/login" color={'blue.500'}>
                                             Log in
                                         </Link>
                                     </HStack>

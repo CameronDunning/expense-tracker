@@ -19,10 +19,10 @@ import {
     Divider,
     Center,
     useToast,
+    Link,
 } from '@chakra-ui/react'
-// import { HamburgerIcon, CloseIcon, AddIcon } from '@chakra-ui/icons'
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons'
-import { Link } from '../Link/Link'
+import { Link as RouterLink } from 'react-router-dom'
 
 import { auth } from '../../config/firebase'
 import { useUser, useSetUser } from '../../Stores/UserStore'
@@ -36,12 +36,13 @@ const LINKS = ['Expenses', 'Incomes', 'Summary', 'Monthly']
 const NavLink = ({ children }) => {
     return (
         <Link
-            href={`/${children.toLowerCase()}`}
+            as={RouterLink}
+            to={`/${children.toLowerCase()}`}
             text={children}
             px={2}
             py={1}
             rounded={'md'}
-            hover={{
+            _hover={{
                 textDecoration: 'none',
                 bg: useColorModeValue('gray.200', 'gray.700'),
             }}>
@@ -88,7 +89,7 @@ export const NavBar = () => {
                         onClick={isOpen ? onClose : onOpen}
                     />
                     <HStack spacing={8} alignItems={'center'}>
-                        <Link href="/">
+                        <Link as={RouterLink} to="/">
                             <Image src="logo-no-background.png" boxSize={'25px'} />
                         </Link>
                         <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
@@ -98,9 +99,6 @@ export const NavBar = () => {
                         </HStack>
                     </HStack>
                     <Flex alignItems={'center'}>
-                        {/* <Button variant={'solid'} colorScheme={'teal'} size={'sm'} mr={4} leftIcon={<AddIcon />}>
-                            Action
-                        </Button> */}
                         <ColourModeSwitcher mr={4} />
                         {user && (
                             <Menu>
@@ -111,7 +109,8 @@ export const NavBar = () => {
                                     <MenuItem onClick={handleLogout}>Log out</MenuItem>
                                     <MenuItem>
                                         <Link
-                                            href={'/profile'}
+                                            as={RouterLink}
+                                            to={'/profile'}
                                             hover={{
                                                 textDecoration: 'none',
                                             }}>
@@ -125,9 +124,13 @@ export const NavBar = () => {
                         )}
                         {!user && (
                             <Center height={'20px'}>
-                                <Link href="/login">Login</Link>
+                                <Link as={RouterLink} to="/login">
+                                    Login
+                                </Link>
                                 <Divider orientation="vertical" m={2} />
-                                <Link href="/register">Register</Link>
+                                <Link as={RouterLink} to="/register">
+                                    Register
+                                </Link>
                             </Center>
                         )}
                     </Flex>
