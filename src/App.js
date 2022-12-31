@@ -76,7 +76,7 @@ function App() {
 
             let expensesArray = []
             querySnapshot.forEach(expense => {
-                expensesArray.push(expense.data())
+                expensesArray.push({ ...expense.data(), id: expense.id })
             })
             expensesArray.sort((a, b) => b.date - a.date)
             setExpenses(expensesArray)

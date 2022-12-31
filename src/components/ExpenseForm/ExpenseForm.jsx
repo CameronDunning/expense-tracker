@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore'
+import { addDoc, collection } from 'firebase/firestore'
 import {
     Box,
     Card,
@@ -18,26 +18,27 @@ import {
 } from '@chakra-ui/react'
 import { AddIcon } from '@chakra-ui/icons'
 import { SingleDatepicker } from 'chakra-dayzed-datepicker'
-import { FaRedoAlt } from 'react-icons/fa'
 import { TbArrowsSplit } from 'react-icons/tb'
+import { FaRedoAlt } from 'react-icons/fa'
 
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 
 import { NOTIFICATION_DURATION, CATEGORIES } from '../../config/constants'
 
-export const NewExpense = () => {
+export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
     const toast = useToast()
 
     const user = useUser()
 
-    const [date, setDate] = useState(new Date())
-    const [expenseName, setExpenseName] = useState('')
-    const [category, setCategory] = useState('')
-    const [split, setSplit] = useState(false)
-    const [recurring, setRecurring] = useState(false)
-    const [amount, setAmount] = useState(0)
-    const [halvedAmount, setHalvedAmount] = useState('($0.00)')
+    const editing = !!expense?.expenseName
+    const [date, setDate] = useState(editing ? expense.date.toDate() : new Date())
+    const [expenseName, setExpenseName] = useState(editing ? expense.expenseName : '')
+    const [category, setCategory] = useState(editing ? expense.category : '')
+    const [split, setSplit] = useState(editing ? expense.split : false)
+    const [recurring, setRecurring] = useState(editing ? expense.recurring : false)
+    const [amount, setAmount] = useState(editing ? expense.amount : 0)
+    const [halvedAmount, setHalvedAmount] = useState(editing ? `($${(expense.amount / 2).toFixed(2)})` : '($0.00)')
 
     useEffect(() => {
         if (!amount) {
@@ -51,6 +52,22 @@ export const NewExpense = () => {
             setHalvedAmount(`($${amount.toFixed(2)})`)
         }
     }, [split, amount])
+
+    useEffect(() => {
+        if (!editing) {
+            return
+        }
+
+        handleChange({
+            id: expense.id,
+            date,
+            expenseName,
+            category,
+            split,
+            recurring,
+            amount,
+        })
+    }, [date, expenseName, category, split, recurring, amount])
 
     const handleSplit = () => {
         setSplit(!split)
@@ -115,12 +132,14 @@ export const NewExpense = () => {
         }
     }
 
+    const rowStyle = editing ? { base: 2 } : { base: 1, lg: 2 }
+
     return (
         <>
             <Card>
                 <CardBody>
                     <FormControl onSubmit={handleSubmit}>
-                        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={4}>
+                        <SimpleGrid columns={rowStyle} gap={4}>
                             <HStack gap={2}>
                                 <Box minW={'125px'}>
                                     <SingleDatepicker name="date" date={date} onDateChange={setDate} />
@@ -174,15 +193,17 @@ export const NewExpense = () => {
                                     />
                                     <InputRightElement children={halvedAmount} pr={12} />
                                 </InputGroup>
-                                <IconButton
-                                    type="submit"
-                                    size={'md'}
-                                    icon={<AddIcon />}
-                                    aria-label={'Add Expense'}
-                                    backgroundColor={'green.500'}
-                                    _hover={{ backgroundColor: 'green.600' }}
-                                    onClick={handleSubmit}
-                                />
+                                {!editing && (
+                                    <IconButton
+                                        type="submit"
+                                        size={'md'}
+                                        icon={<AddIcon />}
+                                        aria-label={'Add Expense'}
+                                        backgroundColor={'green.500'}
+                                        _hover={{ backgroundColor: 'green.600' }}
+                                        onClick={handleSubmit}
+                                    />
+                                )}
                             </HStack>
                         </SimpleGrid>
                     </FormControl>

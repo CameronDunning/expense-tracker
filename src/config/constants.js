@@ -10,3 +10,5 @@ export const CATEGORIES = [
     'Travel/Vacation',
     'Gifts/Donations',
 ]
+
+export const DATE_FORMATTING = { year: 'numeric', month: 'short', day: 'numeric' }

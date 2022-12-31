@@ -1,47 +1,38 @@
-import { Container, TableContainer, Table, Thead, Tr, Th, Td, VStack, StackDivider, Tbody } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
 
+import { Container, VStack, StackDivider } from '@chakra-ui/react'
+
+import { getWindowDimensions } from '../utils/windowDimensions'
 import { useExpenses } from '../Stores/ExpensesStore'
-import { NewExpense } from '../components/NewExpense/NewExpense'
+import { ExpenseForm } from '../components/ExpenseForm/ExpenseForm'
+import { DesktopTable } from '../components/ExpenseTables/DesktopTable'
+import { MobileTable } from '../components/ExpenseTables/MobileTable'
 
 export const Expenses = () => {
     const expenses = useExpenses()
-    const options = { year: 'numeric', month: 'short', day: 'numeric' }
+
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions())
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowDimensions(getWindowDimensions())
+        }
+        window.addEventListener('resize', handleResize)
+
+        return () => window.removeEventListener('resize', handleResize)
+    }, [])
 
     return (
         <main>
             <Container maxW="8xl">
                 <VStack divider={<StackDivider borderColor="gray.400" />} spacing={4}>
-                    <NewExpense />
+                    <ExpenseForm />
 
-                    <TableContainer w={'100%'}>
-                        <Table>
-                            <Thead>
-                                <Tr>
-                                    <Th>Date</Th>
-                                    <Th>Expense</Th>
-                                    <Th>Category</Th>
-                                    <Th>Amount</Th>
-                                    <Th>Split</Th>
-                                    <Th>Recurring</Th>
-                                    <Th>Actions</Th>
-                                </Tr>
-                            </Thead>
-                            <Tbody>
-                                {expenses &&
-                                    expenses.map(expense => (
-                                        <Tr key={expense.id}>
-                                            <Td>{expense.date.toDate().toLocaleDateString(undefined, options)}</Td>
-                                            <Td>{expense.expenseName}</Td>
-                                            <Td>{expense.category}</Td>
-                                            <Td>{expense.amount}</Td>
-                                            <Td>{expense.split}</Td>
-                                            <Td>{expense.recurring}</Td>
-                                            <Td></Td>
-                                        </Tr>
-                                    ))}
-                            </Tbody>
-                        </Table>
-                    </TableContainer>
+                    {windowDimensions.width > 768 ? (
+                        <DesktopTable expenses={expenses} />
+                    ) : (
+                        <MobileTable expenses={expenses} />
+                    )}
                 </VStack>
             </Container>
         </main>
