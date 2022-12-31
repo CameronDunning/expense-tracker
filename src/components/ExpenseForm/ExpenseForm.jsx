@@ -67,7 +67,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
             recurring,
             amount,
         })
-    }, [date, expenseName, category, split, recurring, amount])
+    }, [date, expenseName, category, split, recurring, amount, editing, handleChange, expense.id])
 
     const handleSplit = () => {
         setSplit(!split)
@@ -211,10 +211,4 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
             </Card>
         </>
     )
-}
-
-const styles = {
-    datePicker: {
-        maxWidth: '500px',
-    },
 }

@@ -85,7 +85,7 @@ function App() {
         return () => {
             unsubscribe()
         }
-    }, [user])
+    }, [user, setExpenses])
 
     // TODO: Get incomes
 
