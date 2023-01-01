@@ -31,8 +31,10 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
 
     const user = useUser()
 
+    const today = new Date()
+    const todayWithNoTime = new Date(today.getFullYear(), today.getMonth(), today.getDate())
     const editing = !!expense?.expenseName
-    const [date, setDate] = useState(editing ? expense.date.toDate() : new Date())
+    const [date, setDate] = useState(editing ? expense.date.toDate() : todayWithNoTime)
     const [expenseName, setExpenseName] = useState(editing ? expense.expenseName : '')
     const [category, setCategory] = useState(editing ? expense.category : '')
     const [split, setSplit] = useState(editing ? expense.split : false)

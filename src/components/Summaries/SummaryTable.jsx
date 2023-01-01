@@ -2,8 +2,12 @@ import { TableContainer, Table, Thead, Tr, Th, Td, Tbody } from '@chakra-ui/reac
 
 import { CATEGORIES } from '../../config/constants'
 import { currencyFormatter, percentFormatter } from '../../utils/numberFormatter'
+import { useWindowDimensions } from '../../Stores/UtilsStore'
 
 export const SummaryTable = ({ expensesTally, totalIncome, numberOfMonths }) => {
+    const windowDimensions = useWindowDimensions()
+    const isMobile = windowDimensions.width < 768
+
     const totalExpenses = Object.values(expensesTally).reduce((a, b) => a + b, 0)
 
     return (
@@ -12,34 +16,44 @@ export const SummaryTable = ({ expensesTally, totalIncome, numberOfMonths }) => 
                 <Thead>
                     <Tr>
                         <Th></Th>
-                        <Th isNumeric>Total</Th>
-                        <Th isNumeric>Monthly</Th>
-                        <Th isNumeric>Income %</Th>
+                        <Th px={isMobile ? styles.tablePaddingX : null} isNumeric>
+                            Total
+                        </Th>
+                        <Th px={isMobile ? styles.tablePaddingX : null} isNumeric>
+                            Monthly
+                        </Th>
+                        <Th px={isMobile ? styles.tablePaddingX : null} isNumeric>
+                            Income %
+                        </Th>
                     </Tr>
                     <Tr>
-                        <Th fontSize={'l'}>Expenses</Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null}>
+                            Expenses
+                        </Th>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format(totalExpenses)}
                         </Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format(totalExpenses / numberOfMonths)}
                         </Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {percentFormatter.format(totalExpenses / totalIncome)}
                         </Th>
                     </Tr>
                 </Thead>
                 <Tbody>
                     {CATEGORIES.map(category => (
-                        <Tr key={category} lineHeight={2}>
-                            <Td py={styles.tablePadding}>{category}</Td>
-                            <Td py={styles.tablePadding} isNumeric>
+                        <Tr key={category}>
+                            <Td py={styles.tablePaddingY} px={isMobile ? styles.tablePaddingX : null}>
+                                {category}
+                            </Td>
+                            <Td py={styles.tablePaddingY} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                                 {currencyFormatter.format(expensesTally[category])}
                             </Td>
-                            <Td py={styles.tablePadding} isNumeric>
+                            <Td py={styles.tablePaddingY} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                                 {currencyFormatter.format(expensesTally[category] / numberOfMonths)}
                             </Td>
-                            <Td py={styles.tablePadding} isNumeric>
+                            <Td py={styles.tablePaddingY} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                                 {percentFormatter.format(expensesTally[category] / totalIncome)}
                             </Td>
                         </Tr>
@@ -47,24 +61,28 @@ export const SummaryTable = ({ expensesTally, totalIncome, numberOfMonths }) => 
                 </Tbody>
                 <Thead>
                     <Tr>
-                        <Th fontSize={'l'}>Income</Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null}>
+                            Income
+                        </Th>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format(totalIncome)}
                         </Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format(totalIncome / numberOfMonths)}
                         </Th>
-                        <Th isNumeric fontSize={'l'}></Th>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric></Th>
                     </Tr>
                     <Tr>
-                        <Th fontSize={'l'}>Net Income</Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null}>
+                            Net Income
+                        </Th>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format(totalIncome - totalExpenses)}
                         </Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format((totalIncome - totalExpenses) / numberOfMonths)}
                         </Th>
-                        <Th isNumeric fontSize={'l'}>
+                        <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {percentFormatter.format(1 - totalExpenses / totalIncome)}
                         </Th>
                     </Tr>
@@ -75,5 +93,6 @@ export const SummaryTable = ({ expensesTally, totalIncome, numberOfMonths }) => 
 }
 
 const styles = {
-    tablePadding: 1.5,
+    tablePaddingY: 1.5,
+    tablePaddingX: 0.8,
 }
