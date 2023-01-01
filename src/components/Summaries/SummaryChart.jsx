@@ -61,7 +61,5 @@ export const SummaryChart = ({ expensesTally, totalIncome }) => {
 
     const size = mobile ? windowDimensions.width / 1.5 : Math.min(windowDimensions.width / 3, 440)
 
-    console.log('size', size)
-
     return <Pie data={data} width={size} height={size} options={options} />
 }
