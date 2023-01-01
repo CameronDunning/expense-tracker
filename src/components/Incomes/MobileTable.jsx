@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react'
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
 
-import { formatter } from '../../utils/currencyFormatter'
+import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
@@ -61,7 +61,7 @@ export const MobileTable = ({ incomes }) => {
                                             fontSize={'2xl'}
                                             lineHeight={0.9}
                                             mt={1}>
-                                            {formatter.format(income.amount)}
+                                            {currencyFormatter.format(income.amount)}
                                         </Text>
                                     </VStack>
                                 </Flex>

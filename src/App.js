@@ -5,10 +5,12 @@ import { collection, doc, getDoc, onSnapshot, query, orderBy } from 'firebase/fi
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
+import { getWindowDimensions } from './utils/windowDimensions'
 import { auth, db } from './config/firebase'
 import { useUser, useSetUser } from './Stores/UserStore'
 import { useSetExpenses } from './Stores/ExpensesStore'
 import { useSetIncomes } from './Stores/IncomesStore'
+import { useSetWindowDimensions } from './Stores/UtilsStore'
 import { Layout } from './components/Layout/Layout'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
@@ -16,11 +18,13 @@ import { Register } from './pages/Register'
 import { Profile } from './pages/Profile'
 import { Expenses } from './pages/Expenses'
 import { Incomes } from './pages/Incomes'
+import { Summary } from './pages/Summary'
 import { NotFound } from './pages/404'
 
 function App() {
     const user = useUser()
     const setUser = useSetUser()
+    const setWindowDimensions = useSetWindowDimensions()
     const setExpenses = useSetExpenses()
     const setIncomes = useSetIncomes()
 
@@ -35,6 +39,7 @@ function App() {
                 { path: 'profile', element: <Profile /> },
                 { path: 'expenses', element: <Expenses /> },
                 { path: 'incomes', element: <Incomes /> },
+                { path: 'summary', element: <Summary /> },
             ],
             errorElement: <NotFound />,
         },
@@ -118,6 +123,15 @@ function App() {
             unsubscribe()
         }
     }, [user, setIncomes])
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowDimensions(getWindowDimensions())
+        }
+        window.addEventListener('resize', handleResize)
+
+        return () => window.removeEventListener('resize', handleResize)
+    })
 
     return (
         <ChakraProvider theme={theme}>

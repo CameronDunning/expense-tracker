@@ -18,7 +18,7 @@ import {
 import { TbArrowsSplit } from 'react-icons/tb'
 import { FaPencilAlt, FaRedoAlt, FaTrashAlt } from 'react-icons/fa'
 
-import { formatter } from '../../utils/currencyFormatter'
+import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
@@ -79,7 +79,7 @@ export const DesktopTable = ({ expenses }) => {
                                 </HStack>
                             )
 
-                            const split = expense.split ? formatter.format(expense.amount / 2) : ''
+                            const split = expense.split ? currencyFormatter.format(expense.amount / 2) : ''
 
                             const actions = (
                                 <HStack justifyContent={'right'}>
@@ -113,7 +113,7 @@ export const DesktopTable = ({ expenses }) => {
                                     <Td>{expense.date.toDate().toLocaleDateString(undefined, DATE_FORMATTING)}</Td>
                                     <Td>{expense.expenseName}</Td>
                                     <Td>{expense.category}</Td>
-                                    <Td isNumeric>{formatter.format(expense.amount)}</Td>
+                                    <Td isNumeric>{currencyFormatter.format(expense.amount)}</Td>
                                     <Td isNumeric>{split}</Td>
                                     <Td>{icons}</Td>
                                     <Td isNumeric maxW={'70px'}>
