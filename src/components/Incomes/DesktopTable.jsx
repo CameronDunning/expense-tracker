@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react'
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
 
-import { formatter } from '../../utils/currencyFormatter'
+import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
@@ -84,7 +84,7 @@ export const DesktopTable = ({ incomes }) => {
                                 <Tr key={income.id}>
                                     <Td>{income.date.toDate().toLocaleDateString(undefined, DATE_FORMATTING)}</Td>
                                     <Td>{income.incomeName}</Td>
-                                    <Td isNumeric>{formatter.format(income.amount)}</Td>
+                                    <Td isNumeric>{currencyFormatter.format(income.amount)}</Td>
                                     <Td isNumeric maxWidth={'70px'}>
                                         {actions}
                                     </Td>

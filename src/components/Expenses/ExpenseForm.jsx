@@ -23,7 +23,7 @@ import { FaRedoAlt } from 'react-icons/fa'
 
 import { db } from '../../config/firebase'
 import { NOTIFICATION_DURATION, CATEGORIES } from '../../config/constants'
-import { formatter } from '../../utils/currencyFormatter'
+import { currencyFormatter } from '../../utils/numberFormatter'
 import { useUser } from '../../Stores/UserStore'
 
 export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
@@ -38,7 +38,9 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
     const [split, setSplit] = useState(editing ? expense.split : false)
     const [recurring, setRecurring] = useState(editing ? expense.recurring : false)
     const [amount, setAmount] = useState(editing ? expense.amount : '')
-    const [halvedAmount, setHalvedAmount] = useState(editing ? `($${formatter.format(expense.amount / 2)})` : '($0.00)')
+    const [halvedAmount, setHalvedAmount] = useState(
+        editing ? `($${currencyFormatter.format(expense.amount / 2)})` : '($0.00)'
+    )
 
     useEffect(() => {
         if (!amount) {
@@ -47,9 +49,9 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         }
 
         if (split) {
-            setHalvedAmount(`(${formatter.format(amount / 2)})`)
+            setHalvedAmount(`(${currencyFormatter.format(amount / 2)})`)
         } else {
-            setHalvedAmount(`(${formatter.format(amount)})`)
+            setHalvedAmount(`(${currencyFormatter.format(amount)})`)
         }
     }, [split, amount])
 

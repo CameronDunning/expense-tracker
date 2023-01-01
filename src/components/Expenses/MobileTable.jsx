@@ -18,7 +18,7 @@ import {
 import { TbArrowsSplit } from 'react-icons/tb'
 import { FaPencilAlt, FaRedoAlt, FaTrashAlt } from 'react-icons/fa'
 
-import { formatter } from '../../utils/currencyFormatter'
+import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
@@ -66,11 +66,11 @@ export const MobileTable = ({ expenses }) => {
                                             fontSize={'2xl'}
                                             lineHeight={0.9}
                                             mt={1}>
-                                            {formatter.format(expense.amount)}
+                                            {currencyFormatter.format(expense.amount)}
                                         </Text>
                                         {expense.split ? (
                                             <Text color={'gray.500'} fontWeight={700} fontSize={'large'}>
-                                                {'(' + formatter.format(expense.amount / 2) + ')'}
+                                                {'(' + currencyFormatter.format(expense.amount / 2) + ')'}
                                             </Text>
                                         ) : (
                                             <Spacer />
