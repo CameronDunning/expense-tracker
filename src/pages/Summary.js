@@ -14,7 +14,7 @@ export const Summary = () => {
     const expenses = useExpenses()
     const incomes = useIncomes()
 
-    const [numberOfMonths, setNumberOfMonths] = useState(12)
+    const [numberOfMonths] = useState(12)
 
     // Get the total expenses for the last 12 months by category
     let expensesTally = {}
@@ -25,8 +25,6 @@ export const Summary = () => {
     expenses.forEach(expense => {
         expensesTally[expense.category] += expense.split ? expense.amount / 2 : expense.amount
     })
-
-    const totalExpenses = Object.values(expensesTally).reduce((a, b) => a + b, 0)
 
     // Get the total income for the last 12 months
     let totalIncome = 0
