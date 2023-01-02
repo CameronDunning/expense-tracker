@@ -14,6 +14,7 @@ import {
     HStack,
     useDisclosure,
     IconButton,
+    Button,
 } from '@chakra-ui/react'
 import { TbArrowsSplit } from 'react-icons/tb'
 import { FaPencilAlt, FaRedoAlt, FaTrashAlt } from 'react-icons/fa'
@@ -24,10 +25,13 @@ import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 import { ExpenseEditorModal } from './ExpenseEditorModal'
 
+const IN_VIEW_INCREMENT = 100
+
 export const DesktopTable = ({ expenses }) => {
+    const user = useUser()
     const modalControls = useDisclosure()
     const [selectedExpense, setSelectedExpense] = useState(null)
-    const user = useUser()
+    const [numberExpensesInView, setNumberExpensesInView] = useState(IN_VIEW_INCREMENT)
 
     const handleEditClick = expense => {
         setSelectedExpense(expense)
@@ -55,7 +59,9 @@ export const DesktopTable = ({ expenses }) => {
                 </Thead>
                 <Tbody>
                     {expenses &&
-                        expenses.map(expense => {
+                        expenses.map((expense, key) => {
+                            if (key > numberExpensesInView) return null
+
                             const icons = (
                                 <HStack>
                                     <Flex
@@ -65,7 +71,7 @@ export const DesktopTable = ({ expenses }) => {
                                         justify={'center'}
                                         rounded={'full'}
                                         bg={expense.split ? 'green.500' : 'gray.400'}>
-                                        <Icon as={TbArrowsSplit} size={'md'} w={5} h={5} />
+                                        <Icon as={TbArrowsSplit} />
                                     </Flex>
                                     <Flex
                                         w={8}
@@ -74,7 +80,7 @@ export const DesktopTable = ({ expenses }) => {
                                         justify={'center'}
                                         rounded={'full'}
                                         bg={expense.recurring ? 'green.500' : 'gray.400'}>
-                                        <Icon as={FaRedoAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaRedoAlt} />
                                     </Flex>
                                 </HStack>
                             )
@@ -92,7 +98,7 @@ export const DesktopTable = ({ expenses }) => {
                                         bg={'blue.500'}
                                         _hover={{ bg: 'blue.600' }}
                                         onClick={() => handleEditClick(expense)}>
-                                        <Icon as={FaPencilAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaPencilAlt} />
                                     </IconButton>
                                     <IconButton
                                         w={8}
@@ -103,7 +109,7 @@ export const DesktopTable = ({ expenses }) => {
                                         bg={'red.500'}
                                         _hover={{ bg: 'red.600' }}
                                         onClick={() => handleDelete(expense)}>
-                                        <Icon as={FaTrashAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaTrashAlt} />
                                     </IconButton>
                                 </HStack>
                             )
@@ -124,6 +130,13 @@ export const DesktopTable = ({ expenses }) => {
                         })}
                 </Tbody>
             </Table>
+            {expenses && expenses.length > numberExpensesInView && (
+                <HStack justifyContent={'center'}>
+                    <Button m={5} onClick={() => setNumberExpensesInView(numberExpensesInView + IN_VIEW_INCREMENT)}>
+                        Show more expenses
+                    </Button>
+                </HStack>
+            )}
             <ExpenseEditorModal modalControls={modalControls} expense={selectedExpense} />
         </TableContainer>
     )

@@ -77,5 +77,5 @@ export const MonthlyExpensesChart = ({ expensesBreakdown }) => {
 
     if (labels.length === 0 || datasets.length === 0) return <div>data not loaded</div>
 
-    return <Line data={{ labels, datasets }} width={'300px'} height={'300px'} options={options} />
+    return <Line data={{ labels, datasets }} width={'300px'} height={'400px'} options={options} />
 }

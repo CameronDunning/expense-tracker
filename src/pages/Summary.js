@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 import { HStack, Box, VStack, Select, Heading, Container } from '@chakra-ui/react'
 
-import { CATEGORIES, DATE_FORMATTING_MONTH_YEAR } from '../config/constants'
-import { useExpenses } from '../Stores/ExpensesStore'
-import { useIncomes } from '../Stores/IncomesStore'
+import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
+import { useExpensesBreakdown } from '../Stores/ExpensesStore'
+import { useIncomeBreakdown } from '../Stores/IncomesStore'
 import { useUser } from '../Stores/UserStore'
 import { useWindowDimensions } from '../Stores/UtilsStore'
 import { SummaryTable } from '../components/Summaries/SummaryTable'
@@ -15,30 +15,24 @@ import { MonthlyTotalsChart } from '../components/Summaries/MonthlyTotalsChart'
 import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 
 const MONTHS_HISTORY_OPTIONS = [3, 6, 12, 24]
-const DEFAULT_MONTHS_HISTORY = MONTHS_HISTORY_OPTIONS[2]
+const DEFAULT_MONTHS_HISTORY = MONTHS_HISTORY_OPTIONS[1]
 
 export const Summary = () => {
     const windowDimensions = useWindowDimensions()
     const user = useUser()
-    const expenses = useExpenses()
-    const incomes = useIncomes()
+    const allExpensesBreakdown = useExpensesBreakdown()
+    const allIncomesBreakdown = useIncomeBreakdown()
 
+    // Dates
     const today = useMemo(() => new Date(), [])
     const firstOfMonth = useMemo(() => new Date(today.getFullYear(), today.getMonth(), 1), [today])
-
-    const generateExpensesTally = useCallback(() => {
-        let expensesTally = {}
-        CATEGORIES.forEach(category => {
-            expensesTally[category] = 0
-        })
-        return expensesTally
-    }, [])
-
     const [numberOfMonths, setNumberOfMonths] = useState(DEFAULT_MONTHS_HISTORY)
     const [minDate, setMinDate] = useState(
         new Date(new Date(firstOfMonth).setMonth(firstOfMonth.getMonth() - DEFAULT_MONTHS_HISTORY))
     )
-    const [expensesTally, setExpensesTally] = useState(generateExpensesTally())
+
+    // Data Breakdowns
+    const [expensesTally, setExpensesTally] = useState(generateBlankExpensesTally())
     const [expensesBreakdown, setExpensesBreakdown] = useState({})
     const [incomeTally, setIncomeTally] = useState(0)
     const [incomeBreakdown, setIncomeBreakdown] = useState({})
@@ -48,69 +42,44 @@ export const Summary = () => {
     }, [numberOfMonths, firstOfMonth])
 
     useEffect(() => {
-        if (!expenses) return
+        if (Object.keys(allExpensesBreakdown).length === 0) return
 
-        // ExpensesTally: { category: totalAmount }
-        // ExpensesBreakdown: { dateKey: { data: { category: totalAmount }, date: Date, name: string } }
-        let newExpensesTally = generateExpensesTally()
-        let newExpensesBreakdown = {}
+        const newExpensesTally = generateBlankExpensesTally()
+        const newExpensesBreakdown = { ...allExpensesBreakdown }
 
-        expenses.forEach(expense => {
-            if (expense.date.toDate() < minDate) return
-
-            newExpensesTally[expense.category] += expense.split ? expense.amount / 2 : expense.amount
-
-            const dateName = expense.date.toDate().toLocaleDateString(undefined, DATE_FORMATTING_MONTH_YEAR)
-            const monthString = String(expense.date.toDate().getMonth() + 1).padStart(2, 0)
-            const dateKey = `${expense.date.toDate().getFullYear()}${monthString}`
-            if (!newExpensesBreakdown[dateKey]) {
-                newExpensesBreakdown[dateKey] = {
-                    data: {},
-                    date: new Date(expense.date.toDate().getFullYear(), expense.date.toDate().getMonth(), 1),
-                    name: dateName,
-                }
-                CATEGORIES.forEach(category => {
-                    newExpensesBreakdown[dateKey].data[category] = 0
-                })
+        for (const dateKey in newExpensesBreakdown) {
+            if (newExpensesBreakdown[dateKey].date < minDate) {
+                delete newExpensesBreakdown[dateKey]
+                continue
             }
 
-            newExpensesBreakdown[dateKey].data[expense.category] += expense.split ? expense.amount / 2 : expense.amount
-        })
+            for (const category in newExpensesBreakdown[dateKey].data) {
+                newExpensesTally[category] += newExpensesBreakdown[dateKey].data[category]
+            }
+        }
 
         setExpensesTally(newExpensesTally)
         setExpensesBreakdown(newExpensesBreakdown)
-    }, [expenses, minDate, generateExpensesTally])
+    }, [allExpensesBreakdown, minDate])
 
     useEffect(() => {
-        if (!incomes) return
+        if (Object.keys(allIncomesBreakdown).length === 0) return
 
-        // IcomeTally: totalAmount
-        // IncomeBreakdown: { dateKey: { data: totalAmount, date: Date, name: string } }
         let newIncomeTally = 0
-        let newIncomeBreakdown = {}
+        const newIncomeBreakdown = { ...allIncomesBreakdown }
 
-        incomes.forEach(income => {
-            if (income.date.toDate() < minDate) return
-
-            newIncomeTally += income.amount
-
-            const dateName = income.date.toDate().toLocaleDateString(undefined, DATE_FORMATTING_MONTH_YEAR)
-            const monthString = String(income.date.toDate().getMonth() + 1).padStart(2, 0)
-            const dateKey = `${income.date.toDate().getFullYear()}${monthString}`
-            if (!newIncomeBreakdown[dateKey]) {
-                newIncomeBreakdown[dateKey] = {
-                    total: 0,
-                    date: new Date(income.date.toDate().getFullYear(), income.date.toDate().getMonth(), 1),
-                    name: dateName,
-                }
+        for (const dateKey in newIncomeBreakdown) {
+            if (newIncomeBreakdown[dateKey].date < minDate) {
+                delete newIncomeBreakdown[dateKey]
+                continue
             }
 
-            newIncomeBreakdown[dateKey].total += income.amount
-        })
+            newIncomeTally += newIncomeBreakdown[dateKey].total
+        }
 
         setIncomeTally(newIncomeTally)
         setIncomeBreakdown(newIncomeBreakdown)
-    }, [incomes, minDate])
+    }, [allIncomesBreakdown, minDate])
 
     if (!user) return <NotLoggedIn />
 

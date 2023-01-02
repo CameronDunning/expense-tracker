@@ -1,27 +1,18 @@
 import React, { useEffect } from 'react'
 
 import { onAuthStateChanged } from 'firebase/auth'
-import { collection, doc, getDoc, onSnapshot, query, orderBy } from 'firebase/firestore'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { doc, getDoc } from 'firebase/firestore'
+import { RouterProvider } from 'react-router-dom'
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
+import { expensesSnapshotSubscriber, incomeSnapshotSubscriber } from './utils/firebaseSubscribers'
 import { getWindowDimensions } from './utils/windowDimensions'
+import { ROUTER } from './config/routing'
 import { auth, db } from './config/firebase'
 import { useUser, useSetUser } from './Stores/UserStore'
 import { useSetExpenses } from './Stores/ExpensesStore'
 import { useSetIncomes } from './Stores/IncomesStore'
 import { useSetWindowDimensions } from './Stores/UtilsStore'
-import { Layout } from './components/Layout/Layout'
-import { Home } from './pages/Home'
-import { Login } from './pages/Login'
-import { Register } from './pages/Register'
-import { Profile } from './pages/Profile'
-import { Expenses } from './pages/Expenses'
-import { Incomes } from './pages/Incomes'
-import { Summary } from './pages/Summary'
-import { Monthly } from './pages/Monthly'
-import { DataEntry } from './pages/DataEntry'
-import { NotFound } from './pages/404'
 
 function App() {
     const user = useUser()
@@ -30,24 +21,7 @@ function App() {
     const setExpenses = useSetExpenses()
     const setIncomes = useSetIncomes()
 
-    const router = createBrowserRouter([
-        {
-            path: '/',
-            element: <Layout />,
-            children: [
-                { path: '/', element: <Home /> },
-                { path: 'login', element: <Login /> },
-                { path: 'register', element: <Register /> },
-                { path: 'profile', element: <Profile /> },
-                { path: 'expenses', element: <Expenses /> },
-                { path: 'incomes', element: <Incomes /> },
-                { path: 'summary', element: <Summary /> },
-                { path: 'monthly', element: <Monthly /> },
-                { path: 'data-entry', element: <DataEntry /> },
-            ],
-            errorElement: <NotFound />,
-        },
-    ])
+    const router = ROUTER
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
@@ -83,21 +57,7 @@ function App() {
 
     // Get expenses
     useEffect(() => {
-        if (!user) {
-            setExpenses([])
-            return
-        }
-
-        const q = query(collection(db, `/users/${user.uid}/expenses`), orderBy('date', 'desc'))
-        const unsubscribe = onSnapshot(q, querySnapshot => {
-            if (querySnapshot.size === 0) return setExpenses([])
-
-            let expensesArray = []
-            querySnapshot.forEach(expense => {
-                expensesArray.push({ ...expense.data(), id: expense.id })
-            })
-            setExpenses(expensesArray)
-        })
+        const unsubscribe = expensesSnapshotSubscriber(db, user, setExpenses)
 
         return () => {
             unsubscribe()
@@ -106,22 +66,7 @@ function App() {
 
     // Get incomes
     useEffect(() => {
-        if (!user) {
-            setIncomes([])
-            return
-        }
-
-        const q = query(collection(db, `/users/${user.uid}/incomes`), orderBy('date', 'desc'))
-        const unsubscribe = onSnapshot(q, querySnapshot => {
-            if (querySnapshot.size === 0) return setIncomes([])
-
-            let incomesArray = []
-            querySnapshot.forEach(income => {
-                incomesArray.push({ ...income.data(), id: income.id })
-            })
-
-            setIncomes(incomesArray)
-        })
+        const unsubscribe = incomeSnapshotSubscriber(db, user, setIncomes)
 
         return () => {
             unsubscribe()
