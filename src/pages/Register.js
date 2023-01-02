@@ -1,7 +1,12 @@
 import { useState } from 'react'
 
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'
-import { doc, setDoc } from 'firebase/firestore'
+import {
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    signInWithPopup,
+    GoogleAuthProvider,
+} from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { Navigate } from 'react-router-dom'
 import {
     Button,
@@ -80,7 +85,6 @@ export const Register = () => {
                     firstName,
                     lastName,
                 }
-                // Set user in store
                 setUser(userWithMetaData)
 
                 // Redirect to home page
@@ -89,6 +93,61 @@ export const Register = () => {
             .catch(error => {
                 setErrorFirebase(error.message)
                 return
+            })
+    }
+
+    const handleGoogleClick = () => {
+        const provider = new GoogleAuthProvider()
+        signInWithPopup(auth, provider)
+            .then(result => {
+                const user = result.user
+                const isNewUser = result._tokenResponse.isNewUser
+
+                if (isNewUser) {
+                    // Add user metadata to databse
+                    try {
+                        setDoc(doc(db, 'users', user.uid), {
+                            firstName: user.displayName.split(' ')[0],
+                            lastName: user.displayName.split(' ')[1],
+                            email: user.email,
+                        })
+                    } catch (e) {
+                        console.error('Error adding document: ', e)
+                    }
+
+                    // Set userStore state
+                    const userWithMetaData = {
+                        ...user,
+                        firstName: user.displayName.split(' ')[0],
+                        lastName: user.displayName.split(' ')[1],
+                    }
+                    setUser(userWithMetaData)
+
+                    // Redirect to home page
+                    return <Navigate to="/" />
+                } else {
+                    try {
+                        getDoc(doc(db, 'users', user.uid)).then(doc => {
+                            if (doc.exists()) {
+                                const userWithMetaData = {
+                                    ...user,
+                                    firstName: doc.data().firstName,
+                                    lastName: doc.data().lastName,
+                                }
+                                setUser(userWithMetaData)
+
+                                return <Navigate to="/" />
+                            } else {
+                                console.log('No such document!')
+                            }
+                        })
+                    } catch (e) {
+                        console.error('Error getting document: ', e)
+                    }
+                }
+            })
+            .catch(error => {
+                setErrorFirebase(error.message)
             })
     }
 
@@ -152,7 +211,7 @@ export const Register = () => {
                                         {errorFirebase}
                                     </Alert>
                                 )}
-                                <GoogleButton>Register with Google</GoogleButton>
+                                <GoogleButton onClick={handleGoogleClick}>Sign in with Google</GoogleButton>
                             </Stack>
                         </Stack>
                     </Flex>

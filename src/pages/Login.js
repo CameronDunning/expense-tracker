@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { getDoc, doc } from 'firebase/firestore'
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { getDoc, setDoc, doc } from 'firebase/firestore'
 import { Navigate } from 'react-router-dom'
 import {
     Button,
@@ -34,6 +34,7 @@ export const Login = () => {
     const [errorMissingFields, setErrorMissingFields] = useState(false)
     const [errorPassword, setErrorPassword] = useState(false)
     const [errorUserNotFound, setErrorUserNotFound] = useState(false)
+    const [errorFirebase, setErrorFirebase] = useState(false)
 
     const user = useUser()
     const setUser = useSetUser()
@@ -90,6 +91,61 @@ export const Login = () => {
             })
     }
 
+    const handleGoogleClick = () => {
+        const provider = new GoogleAuthProvider()
+        signInWithPopup(auth, provider)
+            .then(result => {
+                const user = result.user
+                const isNewUser = result._tokenResponse.isNewUser
+
+                if (isNewUser) {
+                    // Add user metadata to databse
+                    try {
+                        setDoc(doc(db, 'users', user.uid), {
+                            firstName: user.displayName.split(' ')[0],
+                            lastName: user.displayName.split(' ')[1],
+                            email: user.email,
+                        })
+                    } catch (e) {
+                        console.error('Error adding document: ', e)
+                    }
+
+                    // Set userStore state
+                    const userWithMetaData = {
+                        ...user,
+                        firstName: user.displayName.split(' ')[0],
+                        lastName: user.displayName.split(' ')[1],
+                    }
+                    setUser(userWithMetaData)
+
+                    // Redirect to home page
+                    return <Navigate to="/" />
+                } else {
+                    try {
+                        getDoc(doc(db, 'users', user.uid)).then(doc => {
+                            if (doc.exists()) {
+                                const userWithMetaData = {
+                                    ...user,
+                                    firstName: doc.data().firstName,
+                                    lastName: doc.data().lastName,
+                                }
+                                setUser(userWithMetaData)
+
+                                return <Navigate to="/" />
+                            } else {
+                                console.log('No such document!')
+                            }
+                        })
+                    } catch (e) {
+                        console.error('Error getting document: ', e)
+                    }
+                }
+            })
+            .catch(error => {
+                setErrorFirebase(error.message)
+            })
+    }
+
     return (
         <Stack direction={'row'} flex={1} minH={'100%'} style={styles.containerStack}>
             <Flex flex={{ base: 0, md: 1 }}>
@@ -138,7 +194,13 @@ export const Login = () => {
                                         User not found
                                     </Alert>
                                 )}
-                                <GoogleButton>Sign in with Google</GoogleButton>
+                                {errorFirebase && (
+                                    <Alert status="error">
+                                        <AlertIcon />
+                                        Firebase error
+                                    </Alert>
+                                )}
+                                <GoogleButton onClick={handleGoogleClick}>Sign in with Google</GoogleButton>
                             </Stack>
                         </Stack>
                     </Flex>

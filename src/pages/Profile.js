@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 
 import { getDoc, doc, setDoc } from 'firebase/firestore'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button, Flex, FormControl, FormLabel, Heading, Input, Stack, useColorModeValue } from '@chakra-ui/react'
 
 import { db } from '../config/firebase'
@@ -11,6 +11,8 @@ import { NotFound } from './404'
 export const Profile = () => {
     const user = useUser()
     const setUser = useSetUser()
+    const navigate = useNavigate()
+
     const [firstName, setFirstName] = useState(user?.firstName)
     const [lastName, setLastName] = useState(user?.lastName)
 
@@ -37,6 +39,8 @@ export const Profile = () => {
                         firstName,
                         lastName,
                     })
+
+                    navigate('/')
                 } else {
                     console.log('No such document!')
                 }
@@ -44,7 +48,7 @@ export const Profile = () => {
             .catch(error => {
                 console.log('Error getting document:', error)
             })
-    }, [firstName, lastName, setUser, user])
+    }, [firstName, lastName, setUser, user, navigate])
 
     const bgColourFlex = useColorModeValue('gray.50', 'gray.800')
     const bgColourStack = useColorModeValue('white', 'gray.700')

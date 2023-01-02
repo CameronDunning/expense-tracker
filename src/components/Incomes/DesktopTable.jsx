@@ -13,6 +13,7 @@ import {
     HStack,
     useDisclosure,
     IconButton,
+    Button,
 } from '@chakra-ui/react'
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
 
@@ -22,10 +23,13 @@ import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 import { IncomeEditorModal } from './IncomeEditorModal'
 
+const IN_VIEW_INCREMENT = 100
+
 export const DesktopTable = ({ incomes }) => {
+    const user = useUser()
     const modalControls = useDisclosure()
     const [selectedIncome, setSelectedIncome] = useState(null)
-    const user = useUser()
+    const [numberIncomesInView, setNumberIncomesInView] = useState(IN_VIEW_INCREMENT)
 
     const handleEditClick = income => {
         setSelectedIncome(income)
@@ -52,7 +56,9 @@ export const DesktopTable = ({ incomes }) => {
                 </Thead>
                 <Tbody>
                     {incomes &&
-                        incomes.map(income => {
+                        incomes.map((income, key) => {
+                            if (key > numberIncomesInView) return null
+
                             const actions = (
                                 <HStack justifyContent={'right'}>
                                     <IconButton
@@ -64,7 +70,7 @@ export const DesktopTable = ({ incomes }) => {
                                         bg={'blue.500'}
                                         _hover={{ bg: 'blue.600' }}
                                         onClick={() => handleEditClick(income)}>
-                                        <Icon as={FaPencilAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaPencilAlt} />
                                     </IconButton>
                                     <IconButton
                                         w={8}
@@ -75,7 +81,7 @@ export const DesktopTable = ({ incomes }) => {
                                         bg={'red.500'}
                                         _hover={{ bg: 'red.600' }}
                                         onClick={() => handleDelete(income)}>
-                                        <Icon as={FaTrashAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaTrashAlt} />
                                     </IconButton>
                                 </HStack>
                             )
@@ -93,6 +99,13 @@ export const DesktopTable = ({ incomes }) => {
                         })}
                 </Tbody>
             </Table>
+            {incomes && incomes.length > numberIncomesInView && (
+                <HStack justifyContent={'center'}>
+                    <Button m={5} onClick={() => setNumberIncomesInView(numberIncomesInView + IN_VIEW_INCREMENT)}>
+                        Show more incomes
+                    </Button>
+                </HStack>
+            )}
             <IncomeEditorModal modalControls={modalControls} income={selectedIncome} />
         </TableContainer>
     )
