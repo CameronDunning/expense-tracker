@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
     Select,
@@ -12,20 +12,17 @@ import {
     AccordionPanel,
 } from '@chakra-ui/react'
 
+import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
+import { currencyFormatter } from '../utils/numberFormatter'
 import { useUser } from '../Stores/UserStore'
 import { useExpenses, useExpensesBreakdown } from '../Stores/ExpensesStore'
 import { useIncomeBreakdown, useIncomes } from '../Stores/IncomesStore'
-import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
-import { DATE_FORMATTING_MONTH_YEAR } from '../config/constants'
-import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
-import { SummaryTable } from '../components/Summaries/SummaryTable'
 import { MonthlySummaryTable } from '../components/Summaries/MonthlySummaryTable'
 import { SummaryChart } from '../components/Summaries/SummaryChart'
-import { currencyFormatter } from '../utils/numberFormatter'
-import { MonthlyTable } from '../components/Summaries/MonthlyTable'
 import { DesktopTable as IncomeDesktopTable } from '../components/Incomes/DesktopTable'
 import { DesktopTable as ExpenseDesktopTable } from '../components/Expenses/DesktopTable'
 import { MonthlyTimeSeriesExpenses } from '../components/Summaries/MonthlyTimeSeriesExpenses'
+import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 
 export const Monthly = () => {
     const user = useUser()
