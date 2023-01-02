@@ -33,7 +33,7 @@ import { NOTIFICATION_DURATION } from '../../config/constants'
 
 const LINKS = ['Expenses', 'Incomes', 'Summary', 'Monthly', 'Data Entry']
 
-const NavLink = ({ children }) => {
+const NavLink = ({ onClose = () => {}, children }) => {
     return (
         <Link
             as={RouterLink}
@@ -45,7 +45,8 @@ const NavLink = ({ children }) => {
             _hover={{
                 textDecoration: 'none',
                 bg: useColorModeValue('gray.200', 'gray.700'),
-            }}>
+            }}
+            onClick={onClose}>
             {children}
         </Link>
     )
@@ -140,7 +141,9 @@ export const NavBar = () => {
                     <Box pb={4} display={{ md: 'none' }}>
                         <Stack as={'nav'} spacing={4}>
                             {LINKS.map(link => (
-                                <NavLink key={link}>{link}</NavLink>
+                                <NavLink onClose={onClose} key={link}>
+                                    {link}
+                                </NavLink>
                             ))}
                         </Stack>
                     </Box>
