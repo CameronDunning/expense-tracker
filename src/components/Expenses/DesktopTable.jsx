@@ -25,11 +25,13 @@ import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 import { ExpenseEditorModal } from './ExpenseEditorModal'
 
+const IN_VIEW_INCREMENT = 100
+
 export const DesktopTable = ({ expenses }) => {
     const user = useUser()
     const modalControls = useDisclosure()
     const [selectedExpense, setSelectedExpense] = useState(null)
-    const [numberExpensesInView, setNumberExpensesInView] = useState(100)
+    const [numberExpensesInView, setNumberExpensesInView] = useState(IN_VIEW_INCREMENT)
 
     const handleEditClick = expense => {
         setSelectedExpense(expense)
@@ -130,7 +132,7 @@ export const DesktopTable = ({ expenses }) => {
             </Table>
             {expenses && expenses.length > numberExpensesInView && (
                 <HStack justifyContent={'center'}>
-                    <Button m={5} onClick={() => setNumberExpensesInView(numberExpensesInView + 100)}>
+                    <Button m={5} onClick={() => setNumberExpensesInView(numberExpensesInView + IN_VIEW_INCREMENT)}>
                         Show more expenses
                     </Button>
                 </HStack>

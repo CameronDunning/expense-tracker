@@ -23,11 +23,13 @@ import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 import { IncomeEditorModal } from './IncomeEditorModal'
 
+const IN_VIEW_INCREMENT = 100
+
 export const DesktopTable = ({ incomes }) => {
     const user = useUser()
     const modalControls = useDisclosure()
     const [selectedIncome, setSelectedIncome] = useState(null)
-    const [numberIncomesInView, setNumberIncomesInView] = useState(100)
+    const [numberIncomesInView, setNumberIncomesInView] = useState(IN_VIEW_INCREMENT)
 
     const handleEditClick = income => {
         setSelectedIncome(income)
@@ -55,7 +57,7 @@ export const DesktopTable = ({ incomes }) => {
                 <Tbody>
                     {incomes &&
                         incomes.map((income, key) => {
-                            if (key >= numberIncomesInView) return null
+                            if (key > numberIncomesInView) return null
 
                             const actions = (
                                 <HStack justifyContent={'right'}>
@@ -99,7 +101,7 @@ export const DesktopTable = ({ incomes }) => {
             </Table>
             {incomes && incomes.length > numberIncomesInView && (
                 <HStack justifyContent={'center'}>
-                    <Button m={5} onClick={() => setNumberIncomesInView(numberIncomesInView + 100)}>
+                    <Button m={5} onClick={() => setNumberIncomesInView(numberIncomesInView + IN_VIEW_INCREMENT)}>
                         Show more incomes
                     </Button>
                 </HStack>
