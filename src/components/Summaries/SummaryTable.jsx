@@ -74,7 +74,7 @@ export const SummaryTable = ({ expensesTally, totalIncome, numberOfMonths }) => 
                     </Tr>
                     <Tr>
                         <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null}>
-                            Net Income
+                            Savings
                         </Th>
                         <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
                             {currencyFormatter.format(totalIncome - totalExpenses)}

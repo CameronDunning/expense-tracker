@@ -97,7 +97,7 @@ export const Monthly = () => {
                     </option>
                 ))}
             </Select>
-            <Heading m={5}>{`Net Income: ${currencyFormatter.format(totalIncome - totalExpenses)}`}</Heading>
+            <Heading m={5}>{`Savings: ${currencyFormatter.format(totalIncome - totalExpenses)}`}</Heading>
             <HStack mx={3} mb={5} p={2} border={'1px'} borderRadius={10}>
                 <Box w="50%">
                     <MonthlySummaryTable expensesTally={expensesTally} totalIncome={totalIncome} />

@@ -16,7 +16,7 @@ import { Line } from 'react-chartjs-2'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
 
-const CATEGORIES = ['Net Income', 'Income', 'Expenses']
+const CATEGORIES = ['Savings', 'Income', 'Expenses']
 const COLOURS = ['rgba(236, 171, 20, 1)', 'rgba(12, 198, 14, 0.4)', 'rgba(240, 5, 5, 0.4)']
 const COLOUR_BORDERS = ['rgba(236, 171, 20, 1)', 'rgba(12, 198, 14, 1)', 'rgba(240, 5, 5, 1)']
 
