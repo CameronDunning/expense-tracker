@@ -60,7 +60,7 @@ export const DesktopTable = ({ expenses }) => {
                 <Tbody>
                     {expenses &&
                         expenses.map((expense, key) => {
-                            if (key > numberExpensesInView) return
+                            if (key > numberExpensesInView) return null
 
                             const icons = (
                                 <HStack>

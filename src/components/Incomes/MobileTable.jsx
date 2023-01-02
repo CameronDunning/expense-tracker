@@ -47,10 +47,10 @@ export const MobileTable = ({ incomes }) => {
             <VStack divider={<StackDivider borderColor="gray.400" />} spacing={4} w={'100%'}>
                 {incomes &&
                     incomes.map((income, key) => {
-                        if (key > numberIncomesInView) return
+                        if (key > numberIncomesInView) return null
 
                         return (
-                            <Box mb={1} w={'100%'}>
+                            <Box key={income.id} mb={1} w={'100%'}>
                                 <Flex>
                                     <Box>
                                         <Heading color={'white'} mb={1}>
@@ -87,7 +87,7 @@ export const MobileTable = ({ incomes }) => {
                                                 bg={'blue.500'}
                                                 _hover={{ bg: 'blue.500' }}
                                                 onClick={() => handleEditClick(income)}>
-                                                <Icon as={FaPencilAlt} size={'md'} w={5} h={5} />
+                                                <Icon as={FaPencilAlt} />
                                             </IconButton>
                                             <Spacer />
                                             <IconButton
@@ -99,7 +99,7 @@ export const MobileTable = ({ incomes }) => {
                                                 bg={'red.500'}
                                                 _hover={{ bg: 'red.500' }}
                                                 onClick={() => handleDelete(income)}>
-                                                <Icon as={FaTrashAlt} size={'md'} w={5} h={5} />
+                                                <Icon as={FaTrashAlt} />
                                             </IconButton>
                                         </VStack>
                                     </Box>

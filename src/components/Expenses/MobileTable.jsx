@@ -48,7 +48,7 @@ export const MobileTable = ({ expenses }) => {
             <VStack divider={<StackDivider borderColor="gray.400" />} spacing={4} w={'100%'}>
                 {expenses &&
                     expenses.map((expense, key) => {
-                        if (key > numberExpensesInView) return
+                        if (key > numberExpensesInView) return null
 
                         return (
                             <Box key={expense.id} mb={1} w={'100%'}>
