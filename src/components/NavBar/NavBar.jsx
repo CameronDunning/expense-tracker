@@ -1,5 +1,5 @@
 import { signOut } from 'firebase/auth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
     Box,
     Flex,
@@ -32,7 +32,9 @@ import { NOTIFICATION_DURATION } from '../../config/constants'
 
 const LINKS = ['Expenses', 'Incomes', 'Summary', 'Monthly', 'Data Entry']
 
-const NavLink = ({ onClose = () => {}, children }) => {
+const NavLink = ({ onClose = () => {}, selected = false, children }) => {
+    const backgroundColour = useColorModeValue('gray.200', 'gray.700')
+
     return (
         <Link
             as={RouterLink}
@@ -41,9 +43,10 @@ const NavLink = ({ onClose = () => {}, children }) => {
             px={2}
             py={1}
             rounded={'md'}
+            bg={selected ? backgroundColour : undefined}
             _hover={{
                 textDecoration: 'none',
-                bg: useColorModeValue('gray.200', 'gray.700'),
+                bg: backgroundColour,
             }}
             onClick={onClose}>
             {children}
@@ -52,6 +55,8 @@ const NavLink = ({ onClose = () => {}, children }) => {
 }
 
 export const NavBar = () => {
+    const { pathname } = useLocation()
+    const matchedPath = pathname.replace('/', '').replace('-', ' ')
     const { isOpen, onOpen, onClose } = useDisclosure()
     const navigate = useNavigate()
     const toast = useToast()
@@ -94,7 +99,9 @@ export const NavBar = () => {
                         </Link>
                         <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
                             {LINKS.map(link => (
-                                <NavLink key={link}>{link}</NavLink>
+                                <NavLink key={link} selected={link.toLowerCase() === matchedPath}>
+                                    {link}
+                                </NavLink>
                             ))}
                         </HStack>
                     </HStack>
