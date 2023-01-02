@@ -117,7 +117,7 @@ export const Summary = () => {
     return (
         <main>
             <Container maxW={'8xl'}>
-                <Select value={numberOfMonths} onChange={e => setNumberOfMonths(e.target.value)} w={200} ml={5} mb={5}>
+                <Select value={numberOfMonths} onChange={e => setNumberOfMonths(e.target.value)} w={220} ml={5} mb={5}>
                     {MONTHS_HISTORY_OPTIONS.map((option, index) => (
                         <option key={index} value={option}>
                             {`${option} months of history`}
