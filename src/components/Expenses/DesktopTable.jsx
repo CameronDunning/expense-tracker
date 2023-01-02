@@ -14,6 +14,7 @@ import {
     HStack,
     useDisclosure,
     IconButton,
+    Button,
 } from '@chakra-ui/react'
 import { TbArrowsSplit } from 'react-icons/tb'
 import { FaPencilAlt, FaRedoAlt, FaTrashAlt } from 'react-icons/fa'
@@ -25,9 +26,10 @@ import { useUser } from '../../Stores/UserStore'
 import { ExpenseEditorModal } from './ExpenseEditorModal'
 
 export const DesktopTable = ({ expenses }) => {
+    const user = useUser()
     const modalControls = useDisclosure()
     const [selectedExpense, setSelectedExpense] = useState(null)
-    const user = useUser()
+    const [numberExpensesInView, setNumberExpensesInView] = useState(100)
 
     const handleEditClick = expense => {
         setSelectedExpense(expense)
@@ -55,7 +57,9 @@ export const DesktopTable = ({ expenses }) => {
                 </Thead>
                 <Tbody>
                     {expenses &&
-                        expenses.map(expense => {
+                        expenses.map((expense, key) => {
+                            if (key > numberExpensesInView) return
+
                             const icons = (
                                 <HStack>
                                     <Flex
@@ -124,6 +128,13 @@ export const DesktopTable = ({ expenses }) => {
                         })}
                 </Tbody>
             </Table>
+            {expenses && expenses.length > numberExpensesInView && (
+                <HStack justifyContent={'center'}>
+                    <Button m={5} onClick={() => setNumberExpensesInView(numberExpensesInView + 100)}>
+                        Show more expenses
+                    </Button>
+                </HStack>
+            )}
             <ExpenseEditorModal modalControls={modalControls} expense={selectedExpense} />
         </TableContainer>
     )
