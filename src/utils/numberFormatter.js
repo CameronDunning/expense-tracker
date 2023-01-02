@@ -5,5 +5,6 @@ export const currencyFormatter = new Intl.NumberFormat('en-CA', {
 
 export const percentFormatter = new Intl.NumberFormat('en-CA', {
     style: 'percent',
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
 })

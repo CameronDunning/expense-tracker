@@ -11,7 +11,6 @@ import {
     MenuButton,
     MenuList,
     MenuItem,
-    MenuDivider,
     useDisclosure,
     useColorModeValue,
     Stack,
@@ -112,14 +111,12 @@ export const NavBar = () => {
                                         <Link
                                             as={RouterLink}
                                             to={'/profile'}
-                                            hover={{
+                                            _hover={{
                                                 textDecoration: 'none',
                                             }}>
                                             Profile
                                         </Link>
                                     </MenuItem>
-                                    <MenuDivider />
-                                    <MenuItem>Link 3</MenuItem>
                                 </MenuList>
                             </Menu>
                         )}

@@ -11,12 +11,13 @@ export const SummaryChart = ({ expensesTally, totalIncome }) => {
     const mobile = windowDimensions.width < 768
 
     const totalExpenses = Object.values(expensesTally).reduce((a, b) => a + b, 0)
+    const netIncome = totalExpenses > totalIncome ? 0 : totalIncome - totalExpenses
 
     const data = {
         labels: [...CATEGORIES, 'Net Income'],
         datasets: [
             {
-                data: [...Object.values(expensesTally), totalIncome - totalExpenses],
+                data: [...Object.values(expensesTally), netIncome],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.4)',
                     'rgba(75, 192, 192, 0.4)',
@@ -52,14 +53,15 @@ export const SummaryChart = ({ expensesTally, totalIncome }) => {
                 labels: {
                     // This more specific font property overrides the global property
                     font: {
-                        size: 20,
+                        size: mobile ? 12 : 20,
                     },
                 },
             },
         },
     }
 
-    const size = mobile ? windowDimensions.width / 1.5 : Math.min(windowDimensions.width / 3, 440)
+    const width = mobile ? windowDimensions.width / 1.4 : Math.min(windowDimensions.width / 3, 440)
+    const height = mobile ? windowDimensions.width / 1.8 : Math.min(windowDimensions.width / 3, 440)
 
-    return <Pie data={data} width={size} height={size} options={options} />
+    return <Pie data={data} width={width} height={height} options={options} />
 }

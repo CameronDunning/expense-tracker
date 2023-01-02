@@ -32,10 +32,6 @@ export const DataEntry = () => {
     const hiddenFileInputExpense = useRef(null)
     const hiddenFileInputIncome = useRef(null)
 
-    if (!user) {
-        return <NotLoggedIn />
-    }
-
     const handleFile = (file, type) => {
         if (type === 'expenses') {
             readFileExpenses(file)
@@ -136,6 +132,8 @@ export const DataEntry = () => {
         // start reading the file. When it is done, calls the onload event defined above.
         reader.readAsBinaryString(file)
     }
+
+    if (!user) return <NotLoggedIn />
 
     return (
         <main>

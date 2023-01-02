@@ -13,9 +13,7 @@ export const Expenses = () => {
     const windowDimensions = useWindowDimensions()
     const expenses = useExpenses()
 
-    if (!user) {
-        return <NotLoggedIn />
-    }
+    if (!user) return <NotLoggedIn />
 
     return (
         <main>

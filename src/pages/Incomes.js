@@ -13,9 +13,7 @@ export const Incomes = () => {
     const windowDimensions = useWindowDimensions()
     const incomes = useIncomes()
 
-    if (!user) {
-        return <NotLoggedIn />
-    }
+    if (!user) return <NotLoggedIn />
 
     return (
         <main>

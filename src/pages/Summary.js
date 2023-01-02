@@ -5,18 +5,21 @@ import { HStack, Box, VStack, Select, Heading, Container } from '@chakra-ui/reac
 import { CATEGORIES, DATE_FORMATTING_MONTH_YEAR } from '../config/constants'
 import { useExpenses } from '../Stores/ExpensesStore'
 import { useIncomes } from '../Stores/IncomesStore'
+import { useUser } from '../Stores/UserStore'
 import { useWindowDimensions } from '../Stores/UtilsStore'
 import { SummaryTable } from '../components/Summaries/SummaryTable'
 import { SummaryChart } from '../components/Summaries/SummaryChart'
 import { MonthlyTable } from '../components/Summaries/MonthlyTable'
 import { MonthlyExpensesChart } from '../components/Summaries/MonthlyExpensesChart'
 import { MonthlyTotalsChart } from '../components/Summaries/MonthlyTotalsChart'
+import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 
 const MONTHS_HISTORY_OPTIONS = [3, 6, 12, 24]
 const DEFAULT_MONTHS_HISTORY = MONTHS_HISTORY_OPTIONS[2]
 
 export const Summary = () => {
     const windowDimensions = useWindowDimensions()
+    const user = useUser()
     const expenses = useExpenses()
     const incomes = useIncomes()
 
@@ -109,6 +112,8 @@ export const Summary = () => {
         setIncomeBreakdown(newIncomeBreakdown)
     }, [incomes, minDate])
 
+    if (!user) return <NotLoggedIn />
+
     return (
         <main>
             <Container maxW={'8xl'}>
@@ -174,7 +179,7 @@ const DesktopLayout = ({ expensesTally, totalIncome, expensesBreakdown, incomeBr
 
 const MobileLayout = ({ expensesTally, totalIncome, numberOfMonths }) => {
     return (
-        <VStack mx={3} mt={2}>
+        <VStack mt={2}>
             <Box w="100%">
                 <SummaryChart expensesTally={expensesTally} totalIncome={totalIncome} />
             </Box>
