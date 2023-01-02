@@ -19,6 +19,8 @@ import { Profile } from './pages/Profile'
 import { Expenses } from './pages/Expenses'
 import { Incomes } from './pages/Incomes'
 import { Summary } from './pages/Summary'
+import { Monthly } from './pages/Monthly'
+import { DataEntry } from './pages/DataEntry'
 import { NotFound } from './pages/404'
 
 function App() {
@@ -40,6 +42,8 @@ function App() {
                 { path: 'expenses', element: <Expenses /> },
                 { path: 'incomes', element: <Incomes /> },
                 { path: 'summary', element: <Summary /> },
+                { path: 'monthly', element: <Monthly /> },
+                { path: 'data-entry', element: <DataEntry /> },
             ],
             errorElement: <NotFound />,
         },

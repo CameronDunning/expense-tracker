@@ -31,13 +31,13 @@ import { useSetIncomes } from '../../Stores/IncomesStore'
 import { ColourModeSwitcher } from '../ColourModeSwitcher/ColourModeSwitcher'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 
-const LINKS = ['Expenses', 'Incomes', 'Summary', 'Monthly']
+const LINKS = ['Expenses', 'Incomes', 'Summary', 'Monthly', 'Data Entry']
 
 const NavLink = ({ children }) => {
     return (
         <Link
             as={RouterLink}
-            to={`/${children.toLowerCase()}`}
+            to={`/${children.toLowerCase().replace(' ', '-')}`}
             text={children}
             px={2}
             py={1}
