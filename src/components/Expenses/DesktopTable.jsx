@@ -65,7 +65,7 @@ export const DesktopTable = ({ expenses }) => {
                                         justify={'center'}
                                         rounded={'full'}
                                         bg={expense.split ? 'green.500' : 'gray.400'}>
-                                        <Icon as={TbArrowsSplit} size={'md'} w={5} h={5} />
+                                        <Icon as={TbArrowsSplit} />
                                     </Flex>
                                     <Flex
                                         w={8}
@@ -74,7 +74,7 @@ export const DesktopTable = ({ expenses }) => {
                                         justify={'center'}
                                         rounded={'full'}
                                         bg={expense.recurring ? 'green.500' : 'gray.400'}>
-                                        <Icon as={FaRedoAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaRedoAlt} />
                                     </Flex>
                                 </HStack>
                             )
@@ -92,7 +92,7 @@ export const DesktopTable = ({ expenses }) => {
                                         bg={'blue.500'}
                                         _hover={{ bg: 'blue.600' }}
                                         onClick={() => handleEditClick(expense)}>
-                                        <Icon as={FaPencilAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaPencilAlt} />
                                     </IconButton>
                                     <IconButton
                                         w={8}
@@ -103,7 +103,7 @@ export const DesktopTable = ({ expenses }) => {
                                         bg={'red.500'}
                                         _hover={{ bg: 'red.600' }}
                                         onClick={() => handleDelete(expense)}>
-                                        <Icon as={FaTrashAlt} size={'md'} w={5} h={5} />
+                                        <Icon as={FaTrashAlt} />
                                     </IconButton>
                                 </HStack>
                             )
