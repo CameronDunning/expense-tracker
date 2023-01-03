@@ -27,7 +27,7 @@ import { ExpenseEditorModal } from './ExpenseEditorModal'
 
 const IN_VIEW_INCREMENT = 100
 
-export const DesktopTable = ({ expenses }) => {
+export const DesktopTable = ({ expenses, readOnly = false }) => {
     const user = useUser()
     const modalControls = useDisclosure()
     const [selectedExpense, setSelectedExpense] = useState(null)
@@ -54,7 +54,7 @@ export const DesktopTable = ({ expenses }) => {
                         <Th isNumeric>Amount</Th>
                         <Th isNumeric>Split</Th>
                         <Th></Th>
-                        <Th isNumeric>Actions</Th>
+                        {!readOnly && <Th isNumeric>Actions</Th>}
                     </Tr>
                 </Thead>
                 <Tbody>
@@ -122,9 +122,11 @@ export const DesktopTable = ({ expenses }) => {
                                     <Td isNumeric>{currencyFormatter.format(expense.amount)}</Td>
                                     <Td isNumeric>{split}</Td>
                                     <Td>{icons}</Td>
-                                    <Td isNumeric maxW={'70px'}>
-                                        {actions}
-                                    </Td>
+                                    {!readOnly && (
+                                        <Td isNumeric maxW={'70px'}>
+                                            {actions}
+                                        </Td>
+                                    )}
                                 </Tr>
                             )
                         })}
