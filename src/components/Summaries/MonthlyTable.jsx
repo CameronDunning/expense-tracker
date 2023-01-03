@@ -64,7 +64,7 @@ export const MonthlyTable = ({ expensesBreakdown, incomeBreakdown }) => {
                             })}
                     </Tr>
                     <Tr>
-                        <Th fontSize={'l'}>Net Income</Th>
+                        <Th fontSize={'l'}>Savings</Th>
                         {incomeBreakdown &&
                             expensesBreakdown &&
                             Object.keys(expensesBreakdown).map(monthKey => {

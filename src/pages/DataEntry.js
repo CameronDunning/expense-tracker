@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 
+import { writeBatch, collection, doc } from 'firebase/firestore'
 import {
     Container,
     VStack,
@@ -11,26 +12,29 @@ import {
     IconButton,
     Icon,
     useToast,
+    Button,
+    useDisclosure,
 } from '@chakra-ui/react'
 import { FaFileUpload } from 'react-icons/fa'
 
+import { parseFileExpenses, parseFileIncome } from '../utils/fileParsing'
+import { db } from '../config/firebase'
+import { NOTIFICATION_DURATION } from '../config/constants'
 import { useUser } from '../Stores/UserStore'
+import { useExpenses } from '../Stores/ExpensesStore'
 import { ExpenseForm } from '../components/Expenses/ExpenseForm'
 import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 import { IncomeForm } from '../components/Incomes/IncomeForm'
-import { writeBatch, collection, doc } from 'firebase/firestore'
-import { db } from '../config/firebase'
-import { NOTIFICATION_DURATION } from '../config/constants'
-
-const expenseTemplate = ['date', 'expenseName', 'category', 'split', 'recurring', 'amount']
-const incomeTemplate = ['date', 'incomeName', 'amount']
+import { DuplicateRecurringExpenseModal } from '../components/Expenses/DuplicateRecurringExpenseModal'
 
 export const DataEntry = () => {
     const toast = useToast()
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const hiddenFileInputIncome = useRef(null)
+    const hiddenFileInputExpense = useRef(null)
 
     const user = useUser()
-    const hiddenFileInputExpense = useRef(null)
-    const hiddenFileInputIncome = useRef(null)
+    const expenses = useExpenses()
 
     const handleFile = (file, type) => {
         if (type === 'expenses') {
@@ -133,6 +137,50 @@ export const DataEntry = () => {
         reader.readAsBinaryString(file)
     }
 
+    const duplicateRecurringExpenses = expenses => {
+        if (expenses.length === 0) {
+            toast({
+                title: 'Error',
+                description: 'You have no recurring expenses for that month, please select a different month.',
+                status: 'error',
+                duration: NOTIFICATION_DURATION,
+                isClosable: true,
+            })
+
+            return
+        }
+
+        const batch = writeBatch(db)
+        try {
+            expenses.forEach(expense => {
+                const { date } = expense
+
+                const today = new Date()
+                const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+                const dayNumber =
+                    date.toDate().getDate() > endOfMonth.getDate() ? endOfMonth.getDate() : date.toDate().getDate()
+                const dateButThisMonth = new Date(today.getFullYear(), today.getMonth(), dayNumber)
+
+                const docRef = doc(collection(db, `users/${user.uid}/expenses/`))
+                batch.set(docRef, { ...expense, date: dateButThisMonth })
+            })
+
+            batch.commit().then(() => {
+                toast({
+                    title: 'Success',
+                    description: 'Your recurring expenses have been duplicated',
+                    status: 'success',
+                    duration: NOTIFICATION_DURATION,
+                    isClosable: true,
+                })
+            })
+        } catch (error) {
+            console.log('error', error)
+        }
+
+        onClose()
+    }
+
     if (!user) return <NotLoggedIn />
 
     return (
@@ -167,7 +215,17 @@ export const DataEntry = () => {
                             accept={'.csv'}
                         />
                     </Box>
-                    <Box alignItems={'left'}>
+                    <Box>
+                        <Heading mb={2}>Duplicate Recurring Expenses</Heading>
+                        <Text color={'gray.500'}>
+                            Duplicate all recurring expenses for this month. This will create a new expense for each
+                            recurring expense with the date set to the same date in this month.
+                        </Text>
+                        <Button mt={2} bg={'green'} onClick={onOpen}>
+                            Duplicate
+                        </Button>
+                    </Box>
+                    <Box>
                         <Heading mb={2}>Incomes Form</Heading>
                         <IncomeForm />
                     </Box>
@@ -196,61 +254,12 @@ export const DataEntry = () => {
                     </Box>
                 </VStack>
             </Container>
+            <DuplicateRecurringExpenseModal
+                isOpen={isOpen}
+                onClose={onClose}
+                duplicateRecurringExpenses={duplicateRecurringExpenses}
+                expenses={expenses}
+            />
         </main>
     )
-}
-
-// utils
-const parseFileExpenses = reader => {
-    const rows = reader.result.split('\r\n')
-
-    let expensesArray = []
-    rows.forEach(row => {
-        const array = row.split(',')
-
-        let expenseObject = {}
-        expenseTemplate.forEach((key, index) => {
-            if (key === 'split' || key === 'recurring') {
-                expenseObject[key] = array[index] === '1' ? true : false
-            } else if (key === 'amount') {
-                expenseObject[key] = parseFloat(array[index])
-            } else if (key === 'date') {
-                // hack to get around pacific time zone vs UTC
-                const date = new Date(array[index])
-                expenseObject[key] = new Date(date.setHours(date.getHours() + 8))
-            } else {
-                expenseObject[key] = array[index]
-            }
-        })
-
-        expensesArray.push(expenseObject)
-    })
-
-    return expensesArray
-}
-
-const parseFileIncome = reader => {
-    const rows = reader.result.split('\r\n')
-
-    let incomesArray = []
-    rows.forEach(row => {
-        const array = row.split(',')
-
-        let incomeObject = {}
-        incomeTemplate.forEach((key, index) => {
-            if (key === 'amount') {
-                incomeObject[key] = parseFloat(array[index])
-            } else if (key === 'date') {
-                // hack to get around pacific time zone vs UTC
-                const date = new Date(array[index])
-                incomeObject[key] = new Date(date.setHours(date.getHours() + 8))
-            } else {
-                incomeObject[key] = array[index]
-            }
-        })
-
-        incomesArray.push(incomeObject)
-    })
-
-    return incomesArray
 }

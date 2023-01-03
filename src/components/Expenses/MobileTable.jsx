@@ -27,7 +27,7 @@ import { ExpenseEditorModal } from './ExpenseEditorModal'
 
 const IN_VIEW_INCREMENT = 50
 
-export const MobileTable = ({ expenses }) => {
+export const MobileTable = ({ expenses, readOnly = false }) => {
     const user = useUser()
     const modalControls = useDisclosure()
     const [selectedExpense, setSelectedExpense] = useState(null)
@@ -104,36 +104,40 @@ export const MobileTable = ({ expenses }) => {
                                             </HStack>
                                         </VStack>
                                     </Flex>
-                                    <Box>
-                                        <Divider orientation="vertical" mx={6} />
-                                    </Box>
-                                    <Box>
-                                        <VStack h={'100%'}>
-                                            <IconButton
-                                                w={8}
-                                                h={8}
-                                                align={'center'}
-                                                justify={'center'}
-                                                rounded={'15%'}
-                                                bg={'blue.500'}
-                                                _hover={{ bg: 'blue.500' }}
-                                                onClick={() => handleEditClick(expense)}>
-                                                <Icon as={FaPencilAlt} />
-                                            </IconButton>
-                                            <Spacer />
-                                            <IconButton
-                                                w={8}
-                                                h={8}
-                                                align={'center'}
-                                                justify={'center'}
-                                                rounded={'15%'}
-                                                bg={'red.500'}
-                                                _hover={{ bg: 'red.500' }}
-                                                onClick={() => handleDelete(expense)}>
-                                                <Icon as={FaTrashAlt} />
-                                            </IconButton>
-                                        </VStack>
-                                    </Box>
+                                    {!readOnly && (
+                                        <>
+                                            <Box>
+                                                <Divider orientation="vertical" mx={3} />
+                                            </Box>
+                                            <Box>
+                                                <VStack h={'100%'}>
+                                                    <IconButton
+                                                        w={8}
+                                                        h={8}
+                                                        align={'center'}
+                                                        justify={'center'}
+                                                        rounded={'15%'}
+                                                        bg={'blue.500'}
+                                                        _hover={{ bg: 'blue.500' }}
+                                                        onClick={() => handleEditClick(expense)}>
+                                                        <Icon as={FaPencilAlt} />
+                                                    </IconButton>
+                                                    <Spacer />
+                                                    <IconButton
+                                                        w={8}
+                                                        h={8}
+                                                        align={'center'}
+                                                        justify={'center'}
+                                                        rounded={'15%'}
+                                                        bg={'red.500'}
+                                                        _hover={{ bg: 'red.500' }}
+                                                        onClick={() => handleDelete(expense)}>
+                                                        <Icon as={FaTrashAlt} />
+                                                    </IconButton>
+                                                </VStack>
+                                            </Box>
+                                        </>
+                                    )}
                                 </Flex>
                             </Box>
                         )

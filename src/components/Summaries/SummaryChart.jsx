@@ -14,7 +14,7 @@ export const SummaryChart = ({ expensesTally, totalIncome }) => {
     const netIncome = totalExpenses > totalIncome ? 0 : totalIncome - totalExpenses
 
     const data = {
-        labels: [...CATEGORIES, 'Net Income'],
+        labels: [...CATEGORIES, 'Savings'],
         datasets: [
             {
                 data: [...Object.values(expensesTally), netIncome],
