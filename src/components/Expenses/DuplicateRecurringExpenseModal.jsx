@@ -42,7 +42,12 @@ export const DuplicateRecurringExpenseModal = ({ isOpen, onClose, duplicateRecur
     useEffect(() => {
         if (!selectedMonth) return
 
-        const startOfMonth = new Date(selectedMonth.replace('-', ' '))
+        const matchedBreakdown = Object.values(allExpensesBreakdown).find(
+            breakdown => breakdown.name === selectedMonth.replace('-', ' ')
+        )
+        if (!matchedBreakdown) return
+
+        const startOfMonth = new Date(matchedBreakdown.date)
         const endOfMonth = new Date(startOfMonth.getFullYear(), startOfMonth.getMonth() + 1, 0, 23, 59, 59)
 
         const selectedMonthExpenses = expenses.filter(expense => {
