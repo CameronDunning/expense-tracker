@@ -15,6 +15,8 @@ import { Line } from 'react-chartjs-2'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
 
 export const MonthlyTimeSeriesExpenses = ({ expenses, daysInMonth }) => {
+    if (!expenses || !daysInMonth) return null
+
     const days = Array.from({ length: daysInMonth }, (v, i) => i)
     const recurringExpenses = Array(daysInMonth).fill(0)
     const nonRecurringExpenses = Array(daysInMonth).fill(0)
@@ -58,37 +60,37 @@ export const MonthlyTimeSeriesExpenses = ({ expenses, daysInMonth }) => {
         ],
     }
 
-    const options = {
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                stacked: true,
-                ticks: {
-                    font: {
-                        size: 15,
-                    },
-                },
-            },
-            x: {
-                ticks: {
-                    font: {
-                        size: 15,
-                    },
-                },
-            },
-        },
-        plugins: {
-            legend: {
-                position: 'right',
-                labels: {
-                    // This more specific font property overrides the global property
-                    font: {
-                        size: 20,
-                    },
-                },
-            },
-        },
-    }
-
     return <Line data={data} width={'300px'} height={'400px'} options={options} />
+}
+
+const options = {
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+            stacked: true,
+            ticks: {
+                font: {
+                    size: 15,
+                },
+            },
+        },
+        x: {
+            ticks: {
+                font: {
+                    size: 15,
+                },
+            },
+        },
+    },
+    plugins: {
+        legend: {
+            position: 'right',
+            labels: {
+                // This more specific font property overrides the global property
+                font: {
+                    size: 20,
+                },
+            },
+        },
+    },
 }
