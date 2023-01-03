@@ -37,7 +37,7 @@ export const MonthlySummaryTable = ({ expensesTally, totalIncome }) => {
                             100%
                         </Th>
                         <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
-                            {percentFormatter.format(totalExpenses / totalIncome)}
+                            {totalIncome === 0 ? 'N/A' : percentFormatter.format(totalExpenses / totalIncome)}
                         </Th>
                     </Tr>
                 </Thead>
@@ -54,7 +54,9 @@ export const MonthlySummaryTable = ({ expensesTally, totalIncome }) => {
                                 {percentFormatter.format(expensesTally[category] / totalExpenses)}
                             </Td>
                             <Td py={styles.tablePaddingY} px={isMobile ? styles.tablePaddingX : null} isNumeric>
-                                {percentFormatter.format(expensesTally[category] / totalIncome)}
+                                {totalIncome === 0
+                                    ? 'N/A'
+                                    : percentFormatter.format(expensesTally[category] / totalIncome)}
                             </Td>
                         </Tr>
                     ))}
@@ -79,7 +81,7 @@ export const MonthlySummaryTable = ({ expensesTally, totalIncome }) => {
                         </Th>
                         <Th></Th>
                         <Th fontSize={'l'} px={isMobile ? styles.tablePaddingX : null} isNumeric>
-                            {percentFormatter.format(1 - totalExpenses / totalIncome)}
+                            {totalIncome === 0 ? 'N/A' : percentFormatter.format(1 - totalExpenses / totalIncome)}
                         </Th>
                     </Tr>
                 </Thead>
