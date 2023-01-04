@@ -23,16 +23,14 @@ import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING, NOTIFICATION_DURATION } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
-import { useIncomes } from '../../Stores/IncomesStore'
 import { IncomeEditorModal } from './IncomeEditorModal'
 
 const IN_VIEW_INCREMENT = 50
 
-export const MobileTable = () => {
+export const MobileTable = ({ incomes }) => {
     const modalControls = useDisclosure()
     const toast = useToast()
     const user = useUser()
-    const incomes = useIncomes()
     const [selectedIncome, setSelectedIncome] = useState(null)
     const [numberIncomesInView, setNumberIncomesInView] = useState(IN_VIEW_INCREMENT)
 
