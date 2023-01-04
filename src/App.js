@@ -54,7 +54,7 @@ function App() {
         return () => {
             unsubscribe()
         }
-    }, [user, setExpenses])
+    }, [user, setExpenses, setIncomes])
 
     useEffect(() => {
         const handleResize = () => {
