@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { deleteDoc, doc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import {
     VStack,
     StackDivider,
@@ -15,11 +15,12 @@ import {
     useDisclosure,
     HStack,
     Button,
+    useToast,
 } from '@chakra-ui/react'
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa'
 
 import { currencyFormatter } from '../../utils/numberFormatter'
-import { DATE_FORMATTING } from '../../config/constants'
+import { DATE_FORMATTING, NOTIFICATION_DURATION } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
 import { IncomeEditorModal } from './IncomeEditorModal'
@@ -27,8 +28,9 @@ import { IncomeEditorModal } from './IncomeEditorModal'
 const IN_VIEW_INCREMENT = 50
 
 export const MobileTable = ({ incomes }) => {
-    const user = useUser()
     const modalControls = useDisclosure()
+    const toast = useToast()
+    const user = useUser()
     const [selectedIncome, setSelectedIncome] = useState(null)
     const [numberIncomesInView, setNumberIncomesInView] = useState(IN_VIEW_INCREMENT)
 
@@ -39,7 +41,22 @@ export const MobileTable = ({ incomes }) => {
     }
 
     const handleDelete = income => {
-        deleteDoc(doc(db, `/users/${user.uid}/incomes`, income.id))
+        const { id } = income
+        const newIncomes = incomes.filter(income => income.id !== id)
+
+        try {
+            const userRef = doc(db, `/users/${user.uid}`)
+            updateDoc(userRef, { incomes: newIncomes })
+        } catch (e) {
+            toast({
+                title: 'Error',
+                description: 'There was an error deleting your expense, please try again later',
+                status: 'error',
+                duration: NOTIFICATION_DURATION,
+                isClosable: true,
+            })
+            console.log('error', e)
+        }
     }
 
     return (

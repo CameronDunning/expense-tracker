@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 
 import { doc, updateDoc } from 'firebase/firestore'
+import { uuidv4 } from '@firebase/util'
 import {
     Container,
     VStack,
@@ -151,7 +152,7 @@ export const DataEntry = () => {
                         : expense.date.toDate().getDate()
                 const dateButThisMonth = new Date(today.getFullYear(), today.getMonth(), dayNumber)
 
-                return { ...expense, date: dateButThisMonth }
+                return { ...expense, date: dateButThisMonth, id: uuidv4() }
             })
 
             const userRef = doc(db, `users/${user.uid}`)

@@ -9,8 +9,8 @@ import { MobileTable } from '../components/Expenses/MobileTable'
 import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 
 export const Expenses = () => {
-    const user = useUser()
     const windowDimensions = useWindowDimensions()
+    const user = useUser()
     const expenses = useExpenses()
 
     if (!user) return <NotLoggedIn />
