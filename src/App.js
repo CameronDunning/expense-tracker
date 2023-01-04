@@ -3,11 +3,7 @@ import React, { useEffect } from 'react'
 import { RouterProvider } from 'react-router-dom'
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
-import {
-    expensesSnapshotSubscriber,
-    incomeSnapshotSubscriber,
-    userSnapshotSubscriber,
-} from './utils/firebaseSubscribers'
+import { userSnapshotSubscriber } from './utils/firebaseSubscribers'
 import { getWindowDimensions } from './utils/windowDimensions'
 import { ROUTER } from './config/routing'
 import { auth, db } from './config/firebase'
@@ -15,6 +11,7 @@ import { useUser, useSetUser } from './Stores/UserStore'
 import { useSetExpenses } from './Stores/ExpensesStore'
 import { useSetIncomes } from './Stores/IncomesStore'
 import { useSetWindowDimensions } from './Stores/UtilsStore'
+import { onSnapshot, doc } from 'firebase/firestore'
 
 function App() {
     const user = useUser()
@@ -33,23 +30,31 @@ function App() {
         }
     }, [setUser, setExpenses, setIncomes])
 
-    // Get expenses
+    // Get expenses and incomes
     useEffect(() => {
-        const unsubscribe = expensesSnapshotSubscriber(db, user, setExpenses)
+        if (!user) {
+            setExpenses([])
+            setIncomes([])
+            return () => {}
+        }
+
+        const userRef = doc(db, 'users', user.uid)
+        const unsubscribe = onSnapshot(userRef, doc => {
+            const newExpenses = doc.data().expenses.sort((a, b) => {
+                return new Date(b.date.toDate()) - new Date(a.date.toDate())
+            })
+            const newIncomes = doc.data().incomes.sort((a, b) => {
+                return new Date(b.date.toDate()) - new Date(a.date.toDate())
+            })
+
+            setExpenses(newExpenses)
+            setIncomes(newIncomes)
+        })
 
         return () => {
             unsubscribe()
         }
-    }, [user, setExpenses])
-
-    // Get incomes
-    useEffect(() => {
-        const unsubscribe = incomeSnapshotSubscriber(db, user, setIncomes)
-
-        return () => {
-            unsubscribe()
-        }
-    }, [user, setIncomes])
+    }, [user, setExpenses, setIncomes])
 
     useEffect(() => {
         const handleResize = () => {

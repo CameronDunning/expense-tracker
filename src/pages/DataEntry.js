@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 
-import { writeBatch, collection, doc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import {
     Container,
     VStack,
@@ -22,6 +22,7 @@ import { db } from '../config/firebase'
 import { NOTIFICATION_DURATION } from '../config/constants'
 import { useUser } from '../Stores/UserStore'
 import { useExpenses } from '../Stores/ExpensesStore'
+import { useIncomes } from '../Stores/IncomesStore'
 import { ExpenseForm } from '../components/Expenses/ExpenseForm'
 import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 import { IncomeForm } from '../components/Incomes/IncomeForm'
@@ -35,6 +36,7 @@ export const DataEntry = () => {
 
     const user = useUser()
     const expenses = useExpenses()
+    const incomes = useIncomes()
 
     const handleFile = (file, type) => {
         if (type === 'expenses') {
@@ -66,34 +68,27 @@ export const DataEntry = () => {
         const reader = new FileReader()
         reader.onload = () => {
             const expensesArray = parseFileExpenses(reader)
-
-            const batch = writeBatch(db)
-
             try {
-                expensesArray.forEach(expense => {
-                    const { date, expenseName, category, split, recurring, amount } = expense
-                    const docRef = doc(collection(db, `users/${user.uid}/expenses/`))
-                    batch.set(docRef, {
-                        date,
-                        expenseName,
-                        category,
-                        split,
-                        recurring,
-                        amount,
-                    })
-                })
+                const userRef = doc(db, `users/${user.uid}`)
 
-                batch.commit().then(() => {
+                updateDoc(userRef, { expenses: [...expenses, ...expensesArray] }).then(() => {
                     toast({
                         title: 'Success',
-                        description: 'Your transactions have been added',
+                        description: 'Your expense has been added',
                         status: 'success',
                         duration: NOTIFICATION_DURATION,
                         isClosable: true,
                     })
                 })
-            } catch (error) {
-                console.log('error', error)
+            } catch (e) {
+                toast({
+                    title: 'Error',
+                    description: 'There was an error adding your expense, please try again later',
+                    status: 'error',
+                    duration: NOTIFICATION_DURATION,
+                    isClosable: true,
+                })
+                console.log('error', e)
             }
         }
 
@@ -105,31 +100,27 @@ export const DataEntry = () => {
         const reader = new FileReader()
         reader.onload = () => {
             const incomesArray = parseFileIncome(reader)
-
-            const batch = writeBatch(db)
-
             try {
-                incomesArray.forEach(income => {
-                    const { date, incomeName, amount } = income
-                    const docRef = doc(collection(db, `users/${user.uid}/incomes/`))
-                    batch.set(docRef, {
-                        date,
-                        incomeName,
-                        amount,
-                    })
-                })
+                const userRef = doc(db, `users/${user.uid}`)
 
-                batch.commit().then(() => {
+                updateDoc(userRef, { incomes: [...incomes, ...incomesArray] }).then(() => {
                     toast({
                         title: 'Success',
-                        description: 'Your transactions have been added',
+                        description: 'Your expense has been added',
                         status: 'success',
                         duration: NOTIFICATION_DURATION,
                         isClosable: true,
                     })
                 })
-            } catch (error) {
-                console.log('error', error)
+            } catch (e) {
+                toast({
+                    title: 'Error',
+                    description: 'There was an error adding your expense, please try again later',
+                    status: 'error',
+                    duration: NOTIFICATION_DURATION,
+                    isClosable: true,
+                })
+                console.log('error', e)
             }
         }
 
@@ -137,8 +128,8 @@ export const DataEntry = () => {
         reader.readAsBinaryString(file)
     }
 
-    const duplicateRecurringExpenses = expenses => {
-        if (expenses.length === 0) {
+    const duplicateRecurringExpenses = expensesFromForm => {
+        if (expensesFromForm.length === 0) {
             toast({
                 title: 'Error',
                 description: 'You have no recurring expenses for that month, please select a different month.',
@@ -150,25 +141,24 @@ export const DataEntry = () => {
             return
         }
 
-        const batch = writeBatch(db)
         try {
-            expenses.forEach(expense => {
-                const { date } = expense
-
+            const newExpenses = expensesFromForm.map(expense => {
                 const today = new Date()
                 const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0)
                 const dayNumber =
-                    date.toDate().getDate() > endOfMonth.getDate() ? endOfMonth.getDate() : date.toDate().getDate()
+                    expense.date.toDate().getDate() > endOfMonth.getDate()
+                        ? endOfMonth.getDate()
+                        : expense.date.toDate().getDate()
                 const dateButThisMonth = new Date(today.getFullYear(), today.getMonth(), dayNumber)
 
-                const docRef = doc(collection(db, `users/${user.uid}/expenses/`))
-                batch.set(docRef, { ...expense, date: dateButThisMonth })
+                return { ...expense, date: dateButThisMonth }
             })
 
-            batch.commit().then(() => {
+            const userRef = doc(db, `users/${user.uid}`)
+            updateDoc(userRef, { expenses: [...expenses, ...newExpenses] }).then(() => {
                 toast({
                     title: 'Success',
-                    description: 'Your recurring expenses have been duplicated',
+                    description: 'Your expense has been added',
                     status: 'success',
                     duration: NOTIFICATION_DURATION,
                     isClosable: true,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { addDoc, collection } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import {
     Box,
     Card,
@@ -19,11 +19,13 @@ import { SingleDatepicker } from 'chakra-dayzed-datepicker'
 import { db } from '../../config/firebase'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 import { useUser } from '../../Stores/UserStore'
+import { useIncomes } from '../../Stores/IncomesStore'
 
 export const IncomeForm = ({ income = {}, handleChange = () => {} }) => {
     const toast = useToast()
 
     const user = useUser()
+    const incomes = useIncomes()
 
     const editing = !!income?.incomeName
     const [date, setDate] = useState(editing ? income.date.toDate() : new Date())
@@ -66,11 +68,13 @@ export const IncomeForm = ({ income = {}, handleChange = () => {} }) => {
         }
 
         try {
-            addDoc(collection(db, `users/${user.uid}/incomes/`), {
+            const userRef = doc(db, `users/${user.uid}`)
+            const newIncome = {
                 date,
                 incomeName,
                 amount,
-            }).then(() => {
+            }
+            updateDoc(userRef, { incomes: [...incomes, newIncome] }).then(() => {
                 toast({
                     title: 'Success',
                     description: 'Your income has been added',
