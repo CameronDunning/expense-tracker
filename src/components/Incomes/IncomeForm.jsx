@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { doc, updateDoc } from 'firebase/firestore'
+import { uuidv4 } from '@firebase/util'
 import {
     Box,
     Card,
@@ -43,7 +44,7 @@ export const IncomeForm = ({ income = {}, handleChange = () => {} }) => {
             incomeName,
             amount,
         })
-    }, [date, incomeName, amount, editing, handleChange, income.id])
+    }, [date, incomeName, amount, editing, income.id, handleChange])
 
     const clearFields = () => {
         setDate(new Date())
@@ -70,6 +71,7 @@ export const IncomeForm = ({ income = {}, handleChange = () => {} }) => {
         try {
             const userRef = doc(db, `users/${user.uid}`)
             const newIncome = {
+                id: uuidv4(),
                 date,
                 incomeName,
                 amount,

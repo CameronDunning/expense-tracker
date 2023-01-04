@@ -1,3 +1,5 @@
+import { uuidv4 } from '@firebase/util'
+
 const expenseTemplate = ['date', 'expenseName', 'category', 'split', 'recurring', 'amount']
 const incomeTemplate = ['date', 'incomeName', 'amount']
 
@@ -8,7 +10,7 @@ export const parseFileExpenses = reader => {
     rows.forEach(row => {
         const array = row.split(',')
 
-        let expenseObject = {}
+        let expenseObject = { id: uuidv4() }
         expenseTemplate.forEach((key, index) => {
             if (key === 'split' || key === 'recurring') {
                 expenseObject[key] = array[index] === '1' ? true : false
@@ -36,7 +38,7 @@ export const parseFileIncome = reader => {
     rows.forEach(row => {
         const array = row.split(',')
 
-        let incomeObject = {}
+        let incomeObject = { id: uuidv4() }
         incomeTemplate.forEach((key, index) => {
             if (key === 'amount') {
                 incomeObject[key] = parseFloat(array[index])

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import {
     Modal,
     ModalOverlay,
@@ -15,28 +15,35 @@ import {
 
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
+import { useIncomes } from '../../Stores/IncomesStore'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 import { IncomeForm } from './IncomeForm'
 
 export const IncomeEditorModal = ({ modalControls, income = {} }) => {
     const { isOpen, onClose } = modalControls
-    const user = useUser()
     const toast = useToast()
+    const user = useUser()
+    const incomes = useIncomes()
 
-    const [currentIncome, setCurrentIncome] = useState(income)
+    const [newIncome, setNewIncome] = useState(income)
 
     const handleSubmit = () => {
-        // Submit the edit to firebase
-        const { date, incomeName, amount, id } = currentIncome
+        // remove the income from the incomes array
+        const { id } = newIncome
+        const index = incomes.findIndex(income => income.id === id)
+        const newIncomes = [...incomes]
+        if (index >= 0) {
+            newIncomes.splice(index, 1)
+        }
+        newIncomes.push(newIncome)
+
+        // add the new income to the incomes array
         try {
-            setDoc(doc(db, `users/${user.uid}/incomes/${id}`), {
-                date,
-                incomeName,
-                amount,
-            }).then(() => {
+            const userRef = doc(db, `users/${user.uid}`)
+            updateDoc(userRef, { incomes: newIncomes }).then(() => {
                 toast({
                     title: 'Success',
-                    description: 'Your transaction has been saved',
+                    description: 'Your expense has been added',
                     status: 'success',
                     duration: NOTIFICATION_DURATION,
                     isClosable: true,
@@ -57,15 +64,15 @@ export const IncomeEditorModal = ({ modalControls, income = {} }) => {
         onClose()
     }
 
-    const handleChange = newIncome => {
-        setCurrentIncome(newIncome)
-    }
+    const handleChange = useCallback(newIncome => {
+        setNewIncome(newIncome)
+    }, [])
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size={'xl'}>
             <ModalOverlay />
             <ModalContent maxW={'90%'}>
-                <ModalHeader>Edit Expense</ModalHeader>
+                <ModalHeader>Edit Income</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                     <IncomeForm income={income} handleChange={handleChange} />

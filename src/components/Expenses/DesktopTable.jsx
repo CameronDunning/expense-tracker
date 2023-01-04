@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { deleteDoc, doc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import {
     TableContainer,
     Table,
@@ -15,21 +15,26 @@ import {
     useDisclosure,
     IconButton,
     Button,
+    useToast,
 } from '@chakra-ui/react'
 import { TbArrowsSplit } from 'react-icons/tb'
 import { FaPencilAlt, FaRedoAlt, FaTrashAlt } from 'react-icons/fa'
 
+import { NOTIFICATION_DURATION } from '../../config/constants'
 import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
+import { useExpenses } from '../../Stores/ExpensesStore'
 import { ExpenseEditorModal } from './ExpenseEditorModal'
 
 const IN_VIEW_INCREMENT = 100
 
-export const DesktopTable = ({ expenses, readOnly = false }) => {
-    const user = useUser()
+export const DesktopTable = ({ readOnly = false }) => {
     const modalControls = useDisclosure()
+    const toast = useToast()
+    const user = useUser()
+    const expenses = useExpenses()
     const [selectedExpense, setSelectedExpense] = useState(null)
     const [numberExpensesInView, setNumberExpensesInView] = useState(IN_VIEW_INCREMENT)
 
@@ -40,7 +45,22 @@ export const DesktopTable = ({ expenses, readOnly = false }) => {
     }
 
     const handleDelete = expense => {
-        deleteDoc(doc(db, `/users/${user.uid}/expenses`, expense.id))
+        const { id } = expense
+        const newExpenses = expenses.filter(expense => expense.id !== id)
+
+        try {
+            const userRef = doc(db, `/users/${user.uid}`)
+            updateDoc(userRef, { expenses: newExpenses })
+        } catch (e) {
+            toast({
+                title: 'Error',
+                description: 'There was an error deleting your expense, please try again later',
+                status: 'error',
+                duration: NOTIFICATION_DURATION,
+                isClosable: true,
+            })
+            console.log('error', e)
+        }
     }
 
     return (

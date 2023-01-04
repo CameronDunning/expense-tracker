@@ -11,7 +11,6 @@ import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 export const Expenses = () => {
     const user = useUser()
     const windowDimensions = useWindowDimensions()
-    const expenses = useExpenses()
 
     if (!user) return <NotLoggedIn />
 
@@ -21,11 +20,7 @@ export const Expenses = () => {
                 <VStack divider={<StackDivider borderColor="gray.400" />} spacing={4}>
                     <ExpenseForm />
 
-                    {windowDimensions.width > 768 ? (
-                        <DesktopTable expenses={expenses} />
-                    ) : (
-                        <MobileTable expenses={expenses} />
-                    )}
+                    {windowDimensions.width > 768 ? <DesktopTable /> : <MobileTable />}
                 </VStack>
             </Container>
         </main>
