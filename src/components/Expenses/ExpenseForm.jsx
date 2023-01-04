@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { addDoc, collection } from 'firebase/firestore'
+import { updateDoc, doc } from 'firebase/firestore'
 import {
     Box,
     Card,
@@ -25,11 +25,13 @@ import { db } from '../../config/firebase'
 import { NOTIFICATION_DURATION, CATEGORIES } from '../../config/constants'
 import { currencyFormatter } from '../../utils/numberFormatter'
 import { useUser } from '../../Stores/UserStore'
+import { useExpenses } from '../../Stores/ExpensesStore'
 
 export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
     const toast = useToast()
 
     const user = useUser()
+    const expenses = useExpenses()
 
     const today = new Date()
     const todayWithNoTime = new Date(today.getFullYear(), today.getMonth(), today.getDate())
@@ -107,17 +109,19 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         }
 
         try {
-            addDoc(collection(db, `users/${user.uid}/expenses/`), {
+            const userRef = doc(db, `users/${user.uid}`)
+            const newExpense = {
                 date,
                 expenseName,
                 category,
                 split,
                 recurring,
                 amount,
-            }).then(() => {
+            }
+            updateDoc(userRef, { expenses: [...expenses, newExpense] }).then(() => {
                 toast({
                     title: 'Success',
-                    description: 'Your transaction has been added',
+                    description: 'Your expense has been added',
                     status: 'success',
                     duration: NOTIFICATION_DURATION,
                     isClosable: true,
@@ -127,7 +131,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         } catch (e) {
             toast({
                 title: 'Error',
-                description: 'There was an error adding your transaction, please try again later',
+                description: 'There was an error adding your expense, please try again later',
                 status: 'error',
                 duration: NOTIFICATION_DURATION,
                 isClosable: true,

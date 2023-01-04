@@ -44,7 +44,7 @@ export const MonthlyTimeSeriesExpenses = ({ expenses, daysInMonth }) => {
             {
                 data: recurringExpenses,
                 label: 'Recurring',
-                backgroundColor: 'rgba(72, 147, 240, 0.8)',
+                backgroundColor: 'rgba(72, 147, 240, 0.4)',
                 borderColor: 'rgba(72, 147, 240, 1)',
                 borderWidth: 2,
                 fill: true,
