@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { updateDoc, doc } from 'firebase/firestore'
+import { uuidv4 } from '@firebase/util'
 import {
     Box,
     Card,
@@ -27,7 +28,7 @@ import { currencyFormatter } from '../../utils/numberFormatter'
 import { useUser } from '../../Stores/UserStore'
 import { useExpenses } from '../../Stores/ExpensesStore'
 
-export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
+export const ExpenseForm = ({ expense = {}, handleChange = () => {}, editing = false }) => {
     const toast = useToast()
 
     const user = useUser()
@@ -35,7 +36,6 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
 
     const today = new Date()
     const todayWithNoTime = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    const editing = !!expense?.expenseName
     const [date, setDate] = useState(editing ? expense.date.toDate() : todayWithNoTime)
     const [expenseName, setExpenseName] = useState(editing ? expense.expenseName : '')
     const [category, setCategory] = useState(editing ? expense.category : '')
@@ -73,7 +73,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
             recurring,
             amount,
         })
-    }, [date, expenseName, category, split, recurring, amount, editing, handleChange, expense.id])
+    }, [date, expenseName, category, split, recurring, amount, editing, expense.id, handleChange])
 
     const handleSplit = () => {
         setSplit(!split)
@@ -111,6 +111,7 @@ export const ExpenseForm = ({ expense = {}, handleChange = () => {} }) => {
         try {
             const userRef = doc(db, `users/${user.uid}`)
             const newExpense = {
+                id: uuidv4(),
                 date,
                 expenseName,
                 category,

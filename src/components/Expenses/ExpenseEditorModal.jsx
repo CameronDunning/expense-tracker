@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
-import { doc, setDoc } from 'firebase/firestore'
+import { doc, updateDoc } from 'firebase/firestore'
 import {
     Modal,
     ModalOverlay,
@@ -15,31 +15,35 @@ import {
 
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
+import { useExpenses } from '../../Stores/ExpensesStore'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 import { ExpenseForm } from './ExpenseForm'
 
 export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
     const { isOpen, onClose } = modalControls
-    const user = useUser()
     const toast = useToast()
+    const user = useUser()
+    const expenses = useExpenses()
 
-    const [currentExpense, setCurrentExpense] = useState(expense)
+    const [newExpense, setNewExpense] = useState(expense)
 
     const handleSubmit = () => {
-        // Submit the edit to firebase
-        const { date, expenseName, category, split, recurring, amount, id } = currentExpense
+        // remove the expense from the expenses array
+        const { id } = newExpense
+        const newExpenses = [...expenses]
+        const index = newExpenses.findIndex(expense => expense.id === id)
+        if (index >= 0) {
+            newExpenses.splice(index, 1)
+        }
+        newExpenses.push(newExpense)
+
+        // add the new expense to the expenses array
         try {
-            setDoc(doc(db, `users/${user.uid}/expenses/${id}`), {
-                date,
-                expenseName,
-                category,
-                split,
-                recurring,
-                amount,
-            }).then(() => {
+            const userRef = doc(db, `users/${user.uid}`)
+            updateDoc(userRef, { expenses: newExpenses }).then(() => {
                 toast({
                     title: 'Success',
-                    description: 'Your transaction has been saved',
+                    description: 'Your expense has been added',
                     status: 'success',
                     duration: NOTIFICATION_DURATION,
                     isClosable: true,
@@ -48,7 +52,7 @@ export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
         } catch (e) {
             toast({
                 title: 'Error',
-                description: 'There was an error editing your transaction, please try again later',
+                description: 'There was an error adding your expense, please try again later',
                 status: 'error',
                 duration: NOTIFICATION_DURATION,
                 isClosable: true,
@@ -60,9 +64,9 @@ export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
         onClose()
     }
 
-    const handleChange = newExpense => {
-        setCurrentExpense(newExpense)
-    }
+    const handleChange = useCallback(newExpense => {
+        setNewExpense(newExpense)
+    }, [])
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} size={'xl'}>
@@ -71,7 +75,7 @@ export const ExpenseEditorModal = ({ modalControls, expense = {} }) => {
                 <ModalHeader>Edit Expense</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <ExpenseForm expense={expense} handleChange={handleChange} />
+                    <ExpenseForm expense={expense} handleChange={handleChange} editing={true} />
                 </ModalBody>
 
                 <ModalFooter>

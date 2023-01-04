@@ -35,7 +35,7 @@ export const Profile = () => {
 
                     // Update user metadata in database
                     setDoc(doc(db, 'users', user.uid), {
-                        email: user.email,
+                        ...user,
                         firstName,
                         lastName,
                     })
