@@ -71,6 +71,8 @@ export const Register = () => {
                         firstName,
                         lastName,
                         email,
+                        expenses: [],
+                        incomes: [],
                     })
                 } catch (e) {
                     console.error('Error adding document: ', e)
@@ -110,6 +112,8 @@ export const Register = () => {
                             firstName: user.displayName.split(' ')[0],
                             lastName: user.displayName.split(' ')[1],
                             email: user.email,
+                            expenses: [],
+                            incomes: [],
                         })
                     } catch (e) {
                         console.error('Error adding document: ', e)
