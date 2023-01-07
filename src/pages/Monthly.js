@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
     Select,
@@ -39,7 +39,7 @@ export const Monthly = () => {
     const allIncomesBreakdown = useIncomeBreakdown()
 
     const [monthsOptions, setMonthsOptions] = useState([])
-    const [selectedMonth, setSelectedMonth] = useState(monthsOptions[0])
+    const [selectedMonth, setSelectedMonth] = useState(null)
     const [daysInMonth, setDaysInMonth] = useState(0)
     const [selectedMonthExpenses, setSelectedMonthExpenses] = useState([])
     const [expensesTally, setExpensesTally] = useState(generateBlankExpensesTally())
@@ -48,18 +48,21 @@ export const Monthly = () => {
     const [totalIncome, setTotalIncome] = useState(0)
 
     useEffect(() => {
-        if (!allExpensesBreakdown) return
+        if (Object.keys(allExpensesBreakdown).length === 0) return
 
         const months = []
         for (const dateKey in allExpensesBreakdown) {
             months.push(allExpensesBreakdown[dateKey].name.replace(' ', '-'))
         }
+
         setMonthsOptions(months.reverse())
-        setSelectedMonth(months[0])
-    }, [allExpensesBreakdown])
+        if (!selectedMonth) {
+            setSelectedMonth(months[0])
+        }
+    }, [allExpensesBreakdown, selectedMonth])
 
     useEffect(() => {
-        if (!selectedMonth || !allExpensesBreakdown) return
+        if (!selectedMonth || !Object.keys(allExpensesBreakdown).length === 0) return
 
         const matchedBreakdown = Object.values(allExpensesBreakdown).find(
             breakdown => breakdown.name === selectedMonth.replace('-', ' ')
