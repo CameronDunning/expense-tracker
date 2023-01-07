@@ -18,7 +18,7 @@ import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
 import { currencyFormatter } from '../utils/numberFormatter'
 import { useUser } from '../Stores/UserStore'
 import { useExpenses, useExpensesBreakdown } from '../Stores/ExpensesStore'
-import { useIncomeBreakdown, useIncomes } from '../Stores/IncomesStore'
+import { useIncomes, useIncomeBreakdown } from '../Stores/IncomesStore'
 import { useWindowDimensions } from '../Stores/UtilsStore'
 import { MonthlySummaryTable } from '../components/Summaries/MonthlySummaryTable'
 import { SummaryChart } from '../components/Summaries/SummaryChart'
@@ -39,7 +39,7 @@ export const Monthly = () => {
     const allIncomesBreakdown = useIncomeBreakdown()
 
     const [monthsOptions, setMonthsOptions] = useState([])
-    const [selectedMonth, setSelectedMonth] = useState(monthsOptions[0])
+    const [selectedMonth, setSelectedMonth] = useState(null)
     const [daysInMonth, setDaysInMonth] = useState(0)
     const [selectedMonthExpenses, setSelectedMonthExpenses] = useState([])
     const [expensesTally, setExpensesTally] = useState(generateBlankExpensesTally())
@@ -48,18 +48,21 @@ export const Monthly = () => {
     const [totalIncome, setTotalIncome] = useState(0)
 
     useEffect(() => {
-        if (!allExpensesBreakdown) return
+        if (Object.keys(allExpensesBreakdown).length === 0) return
 
         const months = []
         for (const dateKey in allExpensesBreakdown) {
             months.push(allExpensesBreakdown[dateKey].name.replace(' ', '-'))
         }
+
         setMonthsOptions(months.reverse())
-        setSelectedMonth(months[0])
-    }, [allExpensesBreakdown])
+        if (!selectedMonth) {
+            setSelectedMonth(months[0])
+        }
+    }, [allExpensesBreakdown, selectedMonth])
 
     useEffect(() => {
-        if (!selectedMonth || !allExpensesBreakdown) return
+        if (!selectedMonth || !Object.keys(allExpensesBreakdown).length === 0) return
 
         const matchedBreakdown = Object.values(allExpensesBreakdown).find(
             breakdown => breakdown.name === selectedMonth.replace('-', ' ')
@@ -104,7 +107,7 @@ export const Monthly = () => {
         <main>
             <Container maxW="8xl">
                 <Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} w={220} ml={5} mb={5}>
-                    {[...monthsOptions, 'Jan-2023', 'Dec-2022'].map((option, index) => (
+                    {monthsOptions.map((option, index) => (
                         <option key={index} value={option}>
                             {option.replace('-', ' ')}
                         </option>
