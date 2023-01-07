@@ -15,6 +15,8 @@ import { Line } from 'react-chartjs-2'
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
 
 export const MonthlyTimeSeriesExpenses = ({ expenses, daysInMonth }) => {
+    const isMobile = window.innerWidth < 768
+
     if (!expenses || !daysInMonth) return null
 
     const days = Array.from({ length: daysInMonth }, (v, i) => i)
@@ -37,6 +39,38 @@ export const MonthlyTimeSeriesExpenses = ({ expenses, daysInMonth }) => {
             }
         }
     })
+
+    const options = {
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                stacked: true,
+                ticks: {
+                    font: {
+                        size: 15,
+                    },
+                },
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 15,
+                    },
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                position: isMobile ? 'bottom' : 'right',
+                labels: {
+                    // This more specific font property overrides the global property
+                    font: {
+                        size: 20,
+                    },
+                },
+            },
+        },
+    }
 
     const data = {
         labels,
@@ -61,36 +95,4 @@ export const MonthlyTimeSeriesExpenses = ({ expenses, daysInMonth }) => {
     }
 
     return <Line data={data} width={'300px'} height={'400px'} options={options} />
-}
-
-const options = {
-    maintainAspectRatio: false,
-    scales: {
-        y: {
-            stacked: true,
-            ticks: {
-                font: {
-                    size: 15,
-                },
-            },
-        },
-        x: {
-            ticks: {
-                font: {
-                    size: 15,
-                },
-            },
-        },
-    },
-    plugins: {
-        legend: {
-            position: 'right',
-            labels: {
-                // This more specific font property overrides the global property
-                font: {
-                    size: 20,
-                },
-            },
-        },
-    },
 }
