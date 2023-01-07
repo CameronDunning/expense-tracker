@@ -23,6 +23,7 @@ import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING, NOTIFICATION_DURATION } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
+import { useIncomes } from '../../Stores/IncomesStore'
 import { IncomeEditorModal } from './IncomeEditorModal'
 
 const IN_VIEW_INCREMENT = 50
@@ -31,6 +32,7 @@ export const MobileTable = ({ incomes }) => {
     const modalControls = useDisclosure()
     const toast = useToast()
     const user = useUser()
+    const allIncomes = useIncomes()
     const [selectedIncome, setSelectedIncome] = useState(null)
     const [numberIncomesInView, setNumberIncomesInView] = useState(IN_VIEW_INCREMENT)
 
@@ -42,7 +44,7 @@ export const MobileTable = ({ incomes }) => {
 
     const handleDelete = income => {
         const { id } = income
-        const newIncomes = incomes.filter(income => income.id !== id)
+        const newIncomes = allIncomes.filter(income => income.id !== id)
 
         try {
             const userRef = doc(db, `/users/${user.uid}`)

@@ -25,6 +25,7 @@ import { currencyFormatter } from '../../utils/numberFormatter'
 import { DATE_FORMATTING } from '../../config/constants'
 import { db } from '../../config/firebase'
 import { useUser } from '../../Stores/UserStore'
+import { useExpenses } from '../../Stores/ExpensesStore'
 import { ExpenseEditorModal } from './ExpenseEditorModal'
 
 const IN_VIEW_INCREMENT = 100
@@ -33,6 +34,7 @@ export const DesktopTable = ({ expenses, readOnly = false }) => {
     const modalControls = useDisclosure()
     const toast = useToast()
     const user = useUser()
+    const allExpenses = useExpenses()
     const [selectedExpense, setSelectedExpense] = useState(null)
     const [numberExpensesInView, setNumberExpensesInView] = useState(IN_VIEW_INCREMENT)
 
@@ -44,7 +46,7 @@ export const DesktopTable = ({ expenses, readOnly = false }) => {
 
     const handleDelete = expense => {
         const { id } = expense
-        const newExpenses = expenses.filter(expense => expense.id !== id)
+        const newExpenses = allExpenses.filter(expense => expense.id !== id)
 
         try {
             const userRef = doc(db, `/users/${user.uid}`)

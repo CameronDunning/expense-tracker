@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import {
     Select,
@@ -18,7 +18,7 @@ import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
 import { currencyFormatter } from '../utils/numberFormatter'
 import { useUser } from '../Stores/UserStore'
 import { useExpenses, useExpensesBreakdown } from '../Stores/ExpensesStore'
-import { useIncomeBreakdown, useIncomes } from '../Stores/IncomesStore'
+import { useIncomes, useIncomeBreakdown } from '../Stores/IncomesStore'
 import { useWindowDimensions } from '../Stores/UtilsStore'
 import { MonthlySummaryTable } from '../components/Summaries/MonthlySummaryTable'
 import { SummaryChart } from '../components/Summaries/SummaryChart'
@@ -104,7 +104,7 @@ export const Monthly = () => {
         <main>
             <Container maxW="8xl">
                 <Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)} w={220} ml={5} mb={5}>
-                    {[...monthsOptions, 'Jan-2023', 'Dec-2022'].map((option, index) => (
+                    {monthsOptions.map((option, index) => (
                         <option key={index} value={option}>
                             {option.replace('-', ' ')}
                         </option>
