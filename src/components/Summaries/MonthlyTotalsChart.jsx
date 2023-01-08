@@ -14,6 +14,8 @@ import {
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 
+import { useWindowDimensions } from '../../Stores/UtilsStore'
+
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
 
 const CATEGORIES = ['Savings', 'Income', 'Expenses']
@@ -21,6 +23,7 @@ const COLOURS = ['rgba(236, 171, 20, 1)', 'rgba(12, 198, 14, 0.4)', 'rgba(240, 5
 const COLOUR_BORDERS = ['rgba(236, 171, 20, 1)', 'rgba(12, 198, 14, 1)', 'rgba(240, 5, 5, 1)']
 
 export const MonthlyTotalsChart = ({ expensesBreakdown, incomeBreakdown }) => {
+    const isMobile = useWindowDimensions().width < 768
     const [labels, setLabels] = useState([])
     const [datasets, setDatasets] = useState([])
 
@@ -81,7 +84,7 @@ export const MonthlyTotalsChart = ({ expensesBreakdown, incomeBreakdown }) => {
         },
         plugins: {
             legend: {
-                position: 'right',
+                position: isMobile ? 'bottom' : 'right',
                 labels: {
                     // This more specific font property overrides the global property
                     font: {

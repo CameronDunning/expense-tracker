@@ -2,23 +2,42 @@ import { useEffect, useState, useCallback } from 'react'
 
 import { getDoc, doc, setDoc } from 'firebase/firestore'
 import { Link, useNavigate } from 'react-router-dom'
-import { Button, Flex, FormControl, FormLabel, Heading, Input, Stack, useColorModeValue } from '@chakra-ui/react'
+import {
+    Button,
+    Flex,
+    FormControl,
+    FormLabel,
+    Heading,
+    Input,
+    Stack,
+    useColorModeValue,
+    InputGroup,
+    InputLeftElement,
+} from '@chakra-ui/react'
 
 import { db } from '../config/firebase'
 import { useUser, useSetUser } from '../Stores/UserStore'
 import { NotFound } from './404'
+import { useExpenses } from '../Stores/ExpensesStore'
+import { useIncomes } from '../Stores/IncomesStore'
 
 export const Profile = () => {
+    const navigate = useNavigate()
     const user = useUser()
     const setUser = useSetUser()
-    const navigate = useNavigate()
+    const expenses = useExpenses()
+    const incomes = useIncomes()
 
-    const [firstName, setFirstName] = useState(user?.firstName)
-    const [lastName, setLastName] = useState(user?.lastName)
+    const [firstName, setFirstName] = useState(user?.firstName || '')
+    const [lastName, setLastName] = useState(user?.lastName || '')
+    const [startingNetWorth, setStartingNetWorth] = useState(user?.startingNetWorth || '')
 
     useEffect(() => {
+        if (!user) return
+
         setFirstName(user.firstName)
         setLastName(user.lastName)
+        setStartingNetWorth(user.startingNetWorth)
     }, [user])
 
     const handleSave = useCallback(() => {
@@ -31,13 +50,16 @@ export const Profile = () => {
                         ...user,
                         firstName,
                         lastName,
+                        startingNetWorth,
                     })
 
                     // Update user metadata in database
                     setDoc(doc(db, 'users', user.uid), {
-                        ...user,
                         firstName,
                         lastName,
+                        expenses,
+                        incomes,
+                        startingNetWorth,
                     })
 
                     navigate('/')
@@ -48,7 +70,7 @@ export const Profile = () => {
             .catch(error => {
                 console.log('Error getting document:', error)
             })
-    }, [firstName, lastName, setUser, user, navigate])
+    }, [firstName, lastName, startingNetWorth, setUser, user, navigate, expenses, incomes])
 
     const bgColourFlex = useColorModeValue('gray.50', 'gray.800')
     const bgColourStack = useColorModeValue('white', 'gray.700')
@@ -71,6 +93,16 @@ export const Profile = () => {
                     <FormLabel>Last name</FormLabel>
                     <Input value={lastName} onChange={e => setLastName(e.target.value)} />
                 </FormControl>
+                <FormLabel>Starting Net Worth</FormLabel>
+                <InputGroup>
+                    <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em" children="$" />
+                    <Input
+                        placeholder="Amount"
+                        type="number"
+                        value={startingNetWorth}
+                        onChange={e => setStartingNetWorth(parseFloat(e.target.value) || 0)}
+                    />
+                </InputGroup>
                 <Stack spacing={6} direction={['column', 'row']}>
                     <Link to={'/'}>
                         <Button

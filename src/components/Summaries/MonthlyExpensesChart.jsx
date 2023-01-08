@@ -13,10 +13,12 @@ import {
 } from 'chart.js'
 
 import { CATEGORIES, COLOURS } from '../../config/constants'
+import { useWindowDimensions } from '../../Stores/UtilsStore'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
 
 export const MonthlyExpensesChart = ({ expensesBreakdown }) => {
+    const isMobile = useWindowDimensions().width < 768
     const [labels, setLabels] = useState([])
     const [datasets, setDatasets] = useState([])
 
@@ -64,7 +66,7 @@ export const MonthlyExpensesChart = ({ expensesBreakdown }) => {
         },
         plugins: {
             legend: {
-                position: 'right',
+                position: isMobile ? 'bottom' : 'right',
                 labels: {
                     // This more specific font property overrides the global property
                     font: {
