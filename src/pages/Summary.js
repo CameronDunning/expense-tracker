@@ -88,7 +88,7 @@ export const Summary = () => {
         setNetWorthTally(newNetWorthTally)
         setExpensesTally(newExpensesTally)
         setExpensesBreakdown(newExpensesBreakdown)
-    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today, user])
+    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today, user, allIncomesBreakdown])
 
     useEffect(() => {
         if (Object.keys(allIncomesBreakdown).length === 0) return

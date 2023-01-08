@@ -70,7 +70,7 @@ export const Profile = () => {
             .catch(error => {
                 console.log('Error getting document:', error)
             })
-    }, [firstName, lastName, startingNetWorth, setUser, user, navigate])
+    }, [firstName, lastName, startingNetWorth, setUser, user, navigate, expenses, incomes])
 
     const bgColourFlex = useColorModeValue('gray.50', 'gray.800')
     const bgColourStack = useColorModeValue('white', 'gray.700')
