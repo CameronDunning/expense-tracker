@@ -13,6 +13,7 @@ import { MonthlyTable } from '../components/Summaries/MonthlyTable'
 import { MonthlyExpensesChart } from '../components/Summaries/MonthlyExpensesChart'
 import { MonthlyTotalsChart } from '../components/Summaries/MonthlyTotalsChart'
 import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
+import { NetWorthChart } from '../components/Summaries/NetWorthChart'
 
 const MONTHS_HISTORY_OPTIONS = [3, 6, 12, 24]
 const DEFAULT_MONTHS_HISTORY = MONTHS_HISTORY_OPTIONS[1]
@@ -37,6 +38,7 @@ export const Summary = () => {
     const [expensesBreakdown, setExpensesBreakdown] = useState({})
     const [incomeTally, setIncomeTally] = useState(0)
     const [incomeBreakdown, setIncomeBreakdown] = useState({})
+    const [netWorthTally, setNetWorthTally] = useState(0)
 
     useEffect(() => {
         setMinDate(new Date(new Date(firstOfMonth).setMonth(firstOfMonth.getMonth() - numberOfMonths)))
@@ -47,8 +49,21 @@ export const Summary = () => {
 
         const newExpensesTally = generateBlankExpensesTally()
         const newExpensesBreakdown = { ...allExpensesBreakdown }
+        let newNetWorthTally = {}
+        let index = 0
+        let previousDateKey = null
 
         for (const dateKey in newExpensesBreakdown) {
+            const incomeDateKey = allIncomesBreakdown[dateKey] ? allIncomesBreakdown[dateKey].total : 0
+
+            newNetWorthTally[dateKey] =
+                (index === 0 ? user.startingNetWorth : newNetWorthTally[previousDateKey]) +
+                incomeDateKey -
+                Object.values(allExpensesBreakdown[dateKey].data).reduce((a, b) => a + b, 0)
+
+            previousDateKey = dateKey
+            index++
+
             if (newExpensesBreakdown[dateKey].date < minDate) {
                 delete newExpensesBreakdown[dateKey]
                 continue
@@ -64,9 +79,16 @@ export const Summary = () => {
             }
         }
 
+        for (const dateKey in newNetWorthTally) {
+            if (!newExpensesBreakdown[dateKey]) {
+                delete newNetWorthTally[dateKey]
+            }
+        }
+
+        setNetWorthTally(newNetWorthTally)
         setExpensesTally(newExpensesTally)
         setExpensesBreakdown(newExpensesBreakdown)
-    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today])
+    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today, user])
 
     useEffect(() => {
         if (Object.keys(allIncomesBreakdown).length === 0) return
@@ -131,6 +153,7 @@ export const Summary = () => {
                         numberOfMonths={Object.keys(expensesBreakdown).length}
                         expensesBreakdown={expensesBreakdown}
                         incomeBreakdown={incomeBreakdown}
+                        netWorthTally={netWorthTally}
                     />
                 ) : (
                     <DesktopLayout
@@ -138,6 +161,7 @@ export const Summary = () => {
                         totalIncome={incomeTally}
                         expensesBreakdown={expensesBreakdown}
                         incomeBreakdown={incomeBreakdown}
+                        netWorthTally={netWorthTally}
                     />
                 )}
             </Container>
@@ -145,7 +169,7 @@ export const Summary = () => {
     )
 }
 
-const DesktopLayout = ({ expensesTally, totalIncome, expensesBreakdown, incomeBreakdown }) => {
+const DesktopLayout = ({ expensesTally, totalIncome, expensesBreakdown, incomeBreakdown, netWorthTally }) => {
     const numberOfMonths = Object.keys(expensesBreakdown).length
 
     return (
@@ -175,11 +199,24 @@ const DesktopLayout = ({ expensesTally, totalIncome, expensesBreakdown, incomeBr
                     <MonthlyTotalsChart expensesBreakdown={expensesBreakdown} incomeBreakdown={incomeBreakdown} />
                 </Box>
             </Box>
+            <Box mx={3} mb={5} p={2} border={'1px'} borderRadius={10}>
+                <Heading m={2}>Net Worth</Heading>
+                <Box m={4}>
+                    <NetWorthChart expensesBreakdown={expensesBreakdown} netWorthTally={netWorthTally} />
+                </Box>
+            </Box>
         </>
     )
 }
 
-const MobileLayout = ({ expensesTally, totalIncome, numberOfMonths, expensesBreakdown, incomeBreakdown }) => {
+const MobileLayout = ({
+    expensesTally,
+    totalIncome,
+    numberOfMonths,
+    expensesBreakdown,
+    incomeBreakdown,
+    netWorthTally,
+}) => {
     return (
         <VStack mt={2}>
             <Box w="100%">
@@ -198,6 +235,12 @@ const MobileLayout = ({ expensesTally, totalIncome, numberOfMonths, expensesBrea
                 <Heading m={2}>Totals</Heading>
                 <Box>
                     <MonthlyTotalsChart expensesBreakdown={expensesBreakdown} incomeBreakdown={incomeBreakdown} />
+                </Box>
+            </Box>
+            <Box w="100%" pb={10}>
+                <Heading m={2}>Net Worth</Heading>
+                <Box>
+                    <NetWorthChart expensesBreakdown={expensesBreakdown} netWorthTally={netWorthTally} />
                 </Box>
             </Box>
         </VStack>
