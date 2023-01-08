@@ -73,6 +73,7 @@ export const Register = () => {
                         email,
                         expenses: [],
                         incomes: [],
+                        startingNetWorth: 0,
                     })
                 } catch (e) {
                     console.error('Error adding document: ', e)
@@ -86,6 +87,7 @@ export const Register = () => {
                     ...user,
                     firstName,
                     lastName,
+                    startingNetWorth: 0,
                 }
                 setUser(userWithMetaData)
 
@@ -114,6 +116,7 @@ export const Register = () => {
                             email: user.email,
                             expenses: [],
                             incomes: [],
+                            startingNetWorth: 0,
                         })
                     } catch (e) {
                         console.error('Error adding document: ', e)
@@ -124,6 +127,7 @@ export const Register = () => {
                         ...user,
                         firstName: user.displayName.split(' ')[0],
                         lastName: user.displayName.split(' ')[1],
+                        startingNetWorth: 0,
                     }
                     setUser(userWithMetaData)
 
@@ -137,6 +141,7 @@ export const Register = () => {
                                     ...user,
                                     firstName: doc.data().firstName,
                                     lastName: doc.data().lastName,
+                                    startingNetWorth: doc.data().startingNetWorth,
                                 }
                                 setUser(userWithMetaData)
 

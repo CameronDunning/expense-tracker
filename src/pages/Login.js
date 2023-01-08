@@ -68,6 +68,7 @@ export const Login = () => {
                                 ...user,
                                 firstName: document.data().firstName,
                                 lastName: document.data().lastName,
+                                startingNetWorth: document.data().startingNetWorth,
                             })
 
                             // Notification
@@ -107,6 +108,7 @@ export const Login = () => {
                             email: user.email,
                             expenses: [],
                             incomes: [],
+                            startingNetWorth: 0,
                         })
                     } catch (e) {
                         console.error('Error adding document: ', e)
@@ -130,6 +132,7 @@ export const Login = () => {
                                     ...user,
                                     firstName: doc.data().firstName,
                                     lastName: doc.data().lastName,
+                                    startingNetWorth: doc.data().startingNetWorth,
                                 }
                                 setUser(userWithMetaData)
 

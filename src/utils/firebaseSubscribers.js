@@ -20,6 +20,7 @@ export const userSnapshotSubscriber = (auth, db, setUser, setExpenses, setIncome
                         ...currentUser,
                         firstName: document.data().firstName,
                         lastName: document.data().lastName,
+                        startingNetWorth: document.data().startingNetWorth,
                     })
                 } else {
                     console.log('No such document!')
