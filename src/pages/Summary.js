@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react'
 
-import { HStack, Box, VStack, Select, Heading, Container } from '@chakra-ui/react'
+import { HStack, Box, VStack, Select, Heading, Container, Switch, FormLabel, Spacer } from '@chakra-ui/react'
 
 import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
 import { useExpensesBreakdown } from '../Stores/ExpensesStore'
@@ -32,6 +32,7 @@ export const Summary = () => {
     )
 
     // Data Breakdowns
+    const [includeCurrentMonth, setIncludeCurrentMonth] = useState(false)
     const [expensesTally, setExpensesTally] = useState(generateBlankExpensesTally())
     const [expensesBreakdown, setExpensesBreakdown] = useState({})
     const [incomeTally, setIncomeTally] = useState(0)
@@ -53,6 +54,11 @@ export const Summary = () => {
                 continue
             }
 
+            if (newExpensesBreakdown[dateKey].date.getMonth() === today.getMonth() && !includeCurrentMonth) {
+                delete newExpensesBreakdown[dateKey]
+                continue
+            }
+
             for (const category in newExpensesBreakdown[dateKey].data) {
                 newExpensesTally[category] += newExpensesBreakdown[dateKey].data[category]
             }
@@ -60,7 +66,7 @@ export const Summary = () => {
 
         setExpensesTally(newExpensesTally)
         setExpensesBreakdown(newExpensesBreakdown)
-    }, [allExpensesBreakdown, minDate])
+    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today])
 
     useEffect(() => {
         if (Object.keys(allIncomesBreakdown).length === 0) return
@@ -74,30 +80,57 @@ export const Summary = () => {
                 continue
             }
 
+            if (newIncomeBreakdown[dateKey].date.getMonth() === today.getMonth() && !includeCurrentMonth) {
+                delete newIncomeBreakdown[dateKey]
+                continue
+            }
+
             newIncomeTally += newIncomeBreakdown[dateKey].total
         }
 
         setIncomeTally(newIncomeTally)
         setIncomeBreakdown(newIncomeBreakdown)
-    }, [allIncomesBreakdown, minDate])
+    }, [allIncomesBreakdown, minDate, includeCurrentMonth, today])
 
     if (!user) return <NotLoggedIn />
 
     return (
         <main>
             <Container maxW={'8xl'}>
-                <Select value={numberOfMonths} onChange={e => setNumberOfMonths(e.target.value)} w={220} ml={5} mb={5}>
-                    {MONTHS_HISTORY_OPTIONS.map((option, index) => (
-                        <option key={index} value={option}>
-                            {`${option} months of history`}
-                        </option>
-                    ))}
-                </Select>
+                <HStack>
+                    <Select
+                        value={numberOfMonths}
+                        onChange={e => setNumberOfMonths(e.target.value)}
+                        w={220}
+                        ml={4}
+                        mb={5}>
+                        {MONTHS_HISTORY_OPTIONS.map((option, index) => (
+                            <option key={index} value={option}>
+                                {`${option} months of history`}
+                            </option>
+                        ))}
+                    </Select>
+                    <Spacer />
+                    <HStack>
+                        <FormLabel mb={5}>Add current month:</FormLabel>
+                        <Box>
+                            <Switch
+                                mb={5}
+                                mr={4}
+                                colorScheme="green"
+                                value={includeCurrentMonth}
+                                onChange={e => setIncludeCurrentMonth(e.target.checked)}
+                            />
+                        </Box>
+                    </HStack>
+                </HStack>
                 {windowDimensions.width < 768 ? (
                     <MobileLayout
                         expensesTally={expensesTally}
                         totalIncome={incomeTally}
                         numberOfMonths={Object.keys(expensesBreakdown).length}
+                        expensesBreakdown={expensesBreakdown}
+                        incomeBreakdown={incomeBreakdown}
                     />
                 ) : (
                     <DesktopLayout
@@ -146,7 +179,7 @@ const DesktopLayout = ({ expensesTally, totalIncome, expensesBreakdown, incomeBr
     )
 }
 
-const MobileLayout = ({ expensesTally, totalIncome, numberOfMonths }) => {
+const MobileLayout = ({ expensesTally, totalIncome, numberOfMonths, expensesBreakdown, incomeBreakdown }) => {
     return (
         <VStack mt={2}>
             <Box w="100%">
@@ -154,6 +187,18 @@ const MobileLayout = ({ expensesTally, totalIncome, numberOfMonths }) => {
             </Box>
             <Box w="100%">
                 <SummaryTable expensesTally={expensesTally} totalIncome={totalIncome} numberOfMonths={numberOfMonths} />
+            </Box>
+            <Box w="100%">
+                <Heading m={2}>Expenses</Heading>
+                <Box>
+                    <MonthlyExpensesChart expensesBreakdown={expensesBreakdown} />
+                </Box>
+            </Box>
+            <Box w="100%" pb={10}>
+                <Heading m={2}>Totals</Heading>
+                <Box>
+                    <MonthlyTotalsChart expensesBreakdown={expensesBreakdown} incomeBreakdown={incomeBreakdown} />
+                </Box>
             </Box>
         </VStack>
     )
