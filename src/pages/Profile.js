@@ -100,7 +100,7 @@ export const Profile = () => {
                         placeholder="Amount"
                         type="number"
                         value={startingNetWorth}
-                        onChange={e => setStartingNetWorth(parseFloat(e.target.value))}
+                        onChange={e => setStartingNetWorth(parseFloat(e.target.value) || 0)}
                     />
                 </InputGroup>
                 <Stack spacing={6} direction={['column', 'row']}>
