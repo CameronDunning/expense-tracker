@@ -69,7 +69,7 @@ export const Summary = () => {
                 continue
             }
 
-            if (newExpensesBreakdown[dateKey].date.getMonth() === today.getMonth() && !includeCurrentMonth) {
+            if (newExpensesBreakdown[dateKey].date >= firstOfMonth && !includeCurrentMonth) {
                 delete newExpensesBreakdown[dateKey]
                 continue
             }
@@ -88,7 +88,7 @@ export const Summary = () => {
         setNetWorthTally(newNetWorthTally)
         setExpensesTally(newExpensesTally)
         setExpensesBreakdown(newExpensesBreakdown)
-    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today, user, allIncomesBreakdown])
+    }, [allExpensesBreakdown, minDate, includeCurrentMonth, today, user, allIncomesBreakdown, firstOfMonth])
 
     useEffect(() => {
         if (Object.keys(allIncomesBreakdown).length === 0) return
@@ -102,7 +102,7 @@ export const Summary = () => {
                 continue
             }
 
-            if (newIncomeBreakdown[dateKey].date.getMonth() === today.getMonth() && !includeCurrentMonth) {
+            if (newIncomeBreakdown[dateKey].date >= firstOfMonth && !includeCurrentMonth) {
                 delete newIncomeBreakdown[dateKey]
                 continue
             }
@@ -112,7 +112,7 @@ export const Summary = () => {
 
         setIncomeTally(newIncomeTally)
         setIncomeBreakdown(newIncomeBreakdown)
-    }, [allIncomesBreakdown, minDate, includeCurrentMonth, today])
+    }, [allIncomesBreakdown, minDate, includeCurrentMonth, today, firstOfMonth])
 
     if (!user) return <NotLoggedIn />
 
