@@ -1,5 +1,8 @@
-import { Container, VStack, StackDivider } from '@chakra-ui/react'
+import { useState, useEffect } from 'react'
 
+import { Container, VStack, StackDivider, Select } from '@chakra-ui/react'
+
+import { CATEGORIES } from '../config/constants'
 import { useUser } from '../Stores/UserStore'
 import { useExpenses } from '../Stores/ExpensesStore'
 import { useWindowDimensions } from '../Stores/UtilsStore'
@@ -13,6 +16,19 @@ export const Expenses = () => {
     const user = useUser()
     const expenses = useExpenses()
 
+    const [selectedCategory, setSelectedCategory] = useState('All')
+    const [selectedCategoryExpenses, setSelectedCategoryExpenses] = useState(expenses)
+
+    useEffect(() => {
+        if (selectedCategory === 'All') {
+            setSelectedCategoryExpenses(expenses)
+            return
+        }
+
+        const filteredExpenses = expenses.filter(expense => expense.category === selectedCategory)
+        setSelectedCategoryExpenses(filteredExpenses)
+    }, [selectedCategory, expenses])
+
     if (!user) return <NotLoggedIn />
 
     return (
@@ -22,7 +38,22 @@ export const Expenses = () => {
                     <ExpenseForm />
 
                     {windowDimensions.width > 768 ? (
-                        <DesktopTable expenses={expenses} />
+                        <div style={styles.container}>
+                            <Select
+                                value={selectedCategory}
+                                onChange={e => setSelectedCategory(e.target.value)}
+                                w={220}
+                                ml={5}
+                                mb={5}>
+                                {['All', ...CATEGORIES].map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </Select>
+
+                            <DesktopTable expenses={selectedCategoryExpenses} />
+                        </div>
                     ) : (
                         <MobileTable expenses={expenses} />
                     )}
@@ -30,4 +61,10 @@ export const Expenses = () => {
             </Container>
         </main>
     )
+}
+
+const styles = {
+    container: {
+        width: '100%',
+    },
 }

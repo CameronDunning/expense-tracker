@@ -16,6 +16,7 @@ import {
 
 import { generateBlankExpensesTally } from '../utils/expenseDataFormatting'
 import { currencyFormatter } from '../utils/numberFormatter'
+import { CATEGORIES } from '../config/constants'
 import { useUser } from '../Stores/UserStore'
 import { useExpenses, useExpensesBreakdown } from '../Stores/ExpensesStore'
 import { useIncomes, useIncomeBreakdown } from '../Stores/IncomesStore'
@@ -137,6 +138,19 @@ export const Monthly = () => {
 }
 
 const DesktopLayout = ({ expensesTally, selectedMonthExpenses, totalIncome, selectedMonthIncomes, daysInMonth }) => {
+    const [selectedCategory, setSelectedCategory] = useState('All')
+    const [selectedCategoryExpenses, setSelectedCategoryExpenses] = useState(selectedMonthExpenses)
+
+    useEffect(() => {
+        if (selectedCategory === 'All') {
+            setSelectedCategoryExpenses(selectedMonthExpenses)
+            return
+        }
+
+        const filteredExpenses = selectedMonthExpenses.filter(expense => expense.category === selectedCategory)
+        setSelectedCategoryExpenses(filteredExpenses)
+    }, [selectedCategory, selectedMonthExpenses])
+
     return (
         <>
             <HStack mx={3} mb={5} p={2} border={'1px'} borderRadius={10}>
@@ -182,7 +196,19 @@ const DesktopLayout = ({ expensesTally, selectedMonthExpenses, totalIncome, sele
                     </h2>
                     <AccordionPanel>
                         <Box mx={3} mb={5} p={2} border={'1px'} borderRadius={10}>
-                            <ExpenseDesktopTable expenses={selectedMonthExpenses} />
+                            <Select
+                                value={selectedCategory}
+                                onChange={e => setSelectedCategory(e.target.value)}
+                                w={220}
+                                ml={5}
+                                mb={5}>
+                                {['All', ...CATEGORIES].map((option, index) => (
+                                    <option key={index} value={option}>
+                                        {option}
+                                    </option>
+                                ))}
+                            </Select>
+                            <ExpenseDesktopTable expenses={selectedCategoryExpenses} />
                         </Box>
                     </AccordionPanel>
                 </AccordionItem>
