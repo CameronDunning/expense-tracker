@@ -41,6 +41,6 @@ jobs:
             - name: Build Application
               run: npm run build
             - name: Deploy to S3
-              run: aws s3 sync ./build s3://${{ secrets.AWS_BUCKET_NAME_DEV }}
+              run: aws s3 sync --delete ./build s3://${{ secrets.AWS_BUCKET_NAME_DEV }}
             - name: Create Cloudfront Invalidation
               run: aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_DISTRIBUTION_ID_DEV }} --paths "/*"

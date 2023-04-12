@@ -16,7 +16,7 @@ import {
     Button,
     useDisclosure,
 } from '@chakra-ui/react'
-import { FaFileUpload } from 'react-icons/fa'
+import { FaFileUpload, FaFileDownload } from 'react-icons/fa'
 
 import { parseFileExpenses, parseFileIncome } from '../utils/fileParsing'
 import { db } from '../config/firebase'
@@ -172,6 +172,46 @@ export const DataEntry = () => {
         onClose()
     }
 
+    const handleExportExpenses = () => {
+        let csv = expenses.map(expense => {
+            return `${expense.date.toDate().toISOString().split('T')[0]},${expense.expenseName},${expense.category},${
+                expense.split
+            },${expense.recurring},${expense.amount}`
+        })
+
+        csv = ['date,name,category,split,recurring,amount', ...csv]
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n')
+
+        const encodedUri = encodeURI(csvContent)
+        const link = document.createElement('a')
+        link.setAttribute('href', encodedUri)
+        link.setAttribute('download', 'expenses.csv')
+        document.body.appendChild(link)
+
+        link.click()
+    }
+
+    const handleExportIncomes = () => {
+        let csv = incomes.map(income => {
+            return `${income.date.toDate().toISOString().split('T')[0]},${income.incomeName},${income.category},${
+                income.amount
+            }`
+        })
+
+        csv = ['date,name,category,amount', ...csv]
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n')
+
+        const encodedUri = encodeURI(csvContent)
+        const link = document.createElement('a')
+        link.setAttribute('href', encodedUri)
+        link.setAttribute('download', 'incomes.csv')
+        document.body.appendChild(link)
+
+        link.click()
+    }
+
     if (!user) return <NotLoggedIn />
 
     return (
@@ -241,6 +281,39 @@ export const DataEntry = () => {
                             onChange={handleChangeIncome}
                             style={{ display: 'none' }}
                             accept={'.csv'}
+                        />
+                    </Box>
+                    <Box>
+                        <Heading mb={2}>Expenses Export</Heading>
+                        <Text color={'gray.500'}>
+                            Download a CSV file with the following columns in this order: date, name, category, split,
+                            recurring, amount.
+                        </Text>
+                        <IconButton
+                            aria-label="Download CSV Template"
+                            rounded={'full'}
+                            bg={'green'}
+                            w={100}
+                            h={100}
+                            m={3}
+                            icon={<Icon as={FaFileDownload} w={12} h={12} />}
+                            onClick={() => handleExportExpenses()}
+                        />
+                    </Box>
+                    <Box>
+                        <Heading mb={2}>Incomes Export</Heading>
+                        <Text color={'gray.500'}>
+                            Download a CSV file with the following columns in this order: date, name, amount.
+                        </Text>
+                        <IconButton
+                            aria-label="Download CSV Template"
+                            rounded={'full'}
+                            bg={'green'}
+                            w={100}
+                            h={100}
+                            m={3}
+                            icon={<Icon as={FaFileDownload} w={12} h={12} />}
+                            onClick={() => handleExportIncomes()}
                         />
                     </Box>
                 </VStack>
