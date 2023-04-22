@@ -175,8 +175,8 @@ export const DataEntry = () => {
     const handleExportExpenses = () => {
         let csv = expenses.map(expense => {
             return `${expense.date.toDate().toISOString().split('T')[0]},${expense.expenseName},${expense.category},${
-                expense.split
-            },${expense.recurring},${expense.amount}`
+                expense.split ? 1 : 0
+            },${expense.recurring ? 1 : 0},${expense.amount}`
         })
 
         csv = ['date,name,category,split,recurring,amount', ...csv]
