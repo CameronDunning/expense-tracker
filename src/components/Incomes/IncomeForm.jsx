@@ -13,6 +13,7 @@ import {
     InputLeftElement,
     IconButton,
     useToast,
+    VStack,
 } from '@chakra-ui/react'
 import { AddIcon } from '@chakra-ui/icons'
 import { SingleDatepicker } from 'chakra-dayzed-datepicker'
@@ -21,12 +22,14 @@ import { db } from '../../config/firebase'
 import { NOTIFICATION_DURATION } from '../../config/constants'
 import { useUser } from '../../Stores/UserStore'
 import { useIncomes } from '../../Stores/IncomesStore'
+import { useWindowDimensions } from '../../Stores/UtilsStore'
 
 export const IncomeForm = ({ income = {}, handleChange = () => {} }) => {
     const toast = useToast()
 
     const user = useUser()
     const incomes = useIncomes()
+    const windowDimensions = useWindowDimensions()
 
     const editing = !!income?.incomeName
     const [date, setDate] = useState(editing ? income.date.toDate() : new Date())
@@ -103,37 +106,81 @@ export const IncomeForm = ({ income = {}, handleChange = () => {} }) => {
             <Card>
                 <CardBody>
                     <FormControl onSubmit={handleSubmit}>
-                        <HStack gap={2}>
-                            <Box minW={'125px'}>
-                                <SingleDatepicker name="date" date={date} onDateChange={setDate} />
-                            </Box>
-                            <Input
-                                type="text"
-                                placeholder="Name"
-                                value={incomeName}
-                                onChange={e => setIncomeName(e.target.value)}
-                            />
-                            <InputGroup>
-                                <InputLeftElement pointerEvents="none" color="gray.300" fontSize="1.2em" children="$" />
+                        {windowDimensions.width > 768 ? (
+                            <HStack gap={2}>
+                                <Box minW={'125px'}>
+                                    <SingleDatepicker name="date" date={date} onDateChange={setDate} />
+                                </Box>
                                 <Input
-                                    placeholder="Amount"
-                                    type="number"
-                                    value={amount}
-                                    onChange={e => setAmount(parseFloat(e.target.value))}
+                                    type="text"
+                                    placeholder="Name"
+                                    value={incomeName}
+                                    onChange={e => setIncomeName(e.target.value)}
                                 />
-                            </InputGroup>
-                            {!editing && (
-                                <IconButton
-                                    type="submit"
-                                    size={'md'}
-                                    icon={<AddIcon />}
-                                    aria-label={'Add Expense'}
-                                    backgroundColor={'green.500'}
-                                    _hover={{ backgroundColor: 'green.600' }}
-                                    onClick={handleSubmit}
+                                <InputGroup>
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        color="gray.300"
+                                        fontSize="1.2em"
+                                        children="$"
+                                    />
+                                    <Input
+                                        placeholder="Amount"
+                                        type="number"
+                                        value={amount}
+                                        onChange={e => setAmount(parseFloat(e.target.value))}
+                                    />
+                                </InputGroup>
+                                {!editing && (
+                                    <IconButton
+                                        type="submit"
+                                        size={'md'}
+                                        icon={<AddIcon />}
+                                        aria-label={'Add Expense'}
+                                        backgroundColor={'green.500'}
+                                        _hover={{ backgroundColor: 'green.600' }}
+                                        onClick={handleSubmit}
+                                    />
+                                )}
+                            </HStack>
+                        ) : (
+                            <VStack>
+                                <Box w="100%">
+                                    <SingleDatepicker name="date" date={date} onDateChange={setDate} />
+                                </Box>
+                                <Input
+                                    type="text"
+                                    placeholder="Name"
+                                    value={incomeName}
+                                    onChange={e => setIncomeName(e.target.value)}
                                 />
-                            )}
-                        </HStack>
+                                <InputGroup>
+                                    <InputLeftElement
+                                        pointerEvents="none"
+                                        color="gray.300"
+                                        fontSize="1.2em"
+                                        children="$"
+                                    />
+                                    <Input
+                                        placeholder="Amount"
+                                        type="number"
+                                        value={amount}
+                                        onChange={e => setAmount(parseFloat(e.target.value))}
+                                    />
+                                </InputGroup>
+                                {!editing && (
+                                    <IconButton
+                                        type="submit"
+                                        size={'md'}
+                                        icon={<AddIcon />}
+                                        aria-label={'Add Expense'}
+                                        backgroundColor={'green.500'}
+                                        _hover={{ backgroundColor: 'green.600' }}
+                                        onClick={handleSubmit}
+                                    />
+                                )}
+                            </VStack>
+                        )}
                     </FormControl>
                 </CardBody>
             </Card>
