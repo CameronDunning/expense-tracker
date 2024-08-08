@@ -15,7 +15,7 @@ import { MonthlyTotalsChart } from '../components/Summaries/MonthlyTotalsChart'
 import { NotLoggedIn } from '../components/Layout/NotLoggedIn'
 import { NetWorthChart } from '../components/Summaries/NetWorthChart'
 
-const MONTHS_HISTORY_OPTIONS = [3, 6, 12, 24]
+const MONTHS_HISTORY_OPTIONS = [3, 6, 12, 24, 36, 48]
 const DEFAULT_MONTHS_HISTORY = MONTHS_HISTORY_OPTIONS[1]
 
 export const Summary = () => {
