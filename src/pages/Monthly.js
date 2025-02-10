@@ -218,6 +218,19 @@ const DesktopLayout = ({ expensesTally, selectedMonthExpenses, totalIncome, sele
 }
 
 const MobileLayout = ({ expensesTally, selectedMonthExpenses, totalIncome, selectedMonthIncomes, daysInMonth }) => {
+    const [selectedCategory, setSelectedCategory] = useState('All')
+    const [selectedCategoryExpenses, setSelectedCategoryExpenses] = useState(selectedMonthExpenses)
+
+    useEffect(() => {
+        if (selectedCategory === 'All') {
+            setSelectedCategoryExpenses(selectedMonthExpenses)
+            return
+        }
+
+        const filteredExpenses = selectedMonthExpenses.filter(expense => expense.category === selectedCategory)
+        setSelectedCategoryExpenses(filteredExpenses)
+    }, [selectedCategory, selectedMonthExpenses])
+
     return (
         <>
             <VStack mt={2}>
@@ -262,7 +275,19 @@ const MobileLayout = ({ expensesTally, selectedMonthExpenses, totalIncome, selec
                     </h2>
                     <AccordionPanel>
                         {/* <Heading m={2}>Expenses</Heading> */}
-                        <ExpenseMobileTable expenses={selectedMonthExpenses} />
+                        <Select
+                            value={selectedCategory}
+                            onChange={e => setSelectedCategory(e.target.value)}
+                            w={220}
+                            ml={5}
+                            mb={5}>
+                            {['All', ...CATEGORIES].map((option, index) => (
+                                <option key={index} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </Select>
+                        <ExpenseMobileTable expenses={selectedCategoryExpenses} />
                     </AccordionPanel>
                 </AccordionItem>
             </Accordion>
